@@ -1,0 +1,195 @@
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="jumbotron p-3">
+                <h2><b>Assets</b> <button type="button" class="btn btn-success float-right" data-toggle="modal"
+                        data-target="#mymodal">Agregar nuevo</button></h2>
+                <br>
+                <table class="table table-hover table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>IP</th>
+                        <th>Acciones</th>
+                    </tr>
+
+                    <tr>
+                        <td>1</td>
+                        <td>Ejemplo</td>
+                        <td>Ejemplo</td>
+                        <td>Oficna principal</td>
+                        <td>11111111111</td>
+                        <td>11111111111</td>
+                        <td>11111111111</td>
+                        <td>
+                            <a href="" class="btn btn-light btn-xs" data-toggle="modal" data-target="#modalver"><i
+                                    class="bi bi-search"></i></a>
+                            <a href="" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modaledit"><i
+                                    class="bi bi-pencil-square"></i></a>
+                            <a href="" class="btn btn-danger btn-xs"
+                                onclick="return confirm('¿Seguro que quieres borrar?')"><i
+                                    class="bi bi-x-square-fill"></i></a>
+                        </td>
+                    </tr>
+
+                    <!-- Modal Edit-->
+                    <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Editar Asset</h4>
+                                </div>
+
+                                <div class="modal-body">
+                                    <form action="{{url_for('update')}}" method="POST">
+
+                                        <div class="form-group">
+                                            <label>Name:</label>
+                                            <input type="hidden" name="id" value="{{row.id}}">
+                                            <input type="text" class="form-control" name="name" value="{{row.name}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Email:</label>
+                                            <input type="text" class="form-control" name="email" value="{{row.email}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Phone:</label>
+                                            <input type="text" class="form-control" name="phone" value="{{row.phone}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit">Editar</button>
+                                        </div>
+
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </table>
+
+
+            </div>
+
+            <!-- Modal Add -->
+            <div id="mymodal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Agregar Asset</h4>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <form action="" method="POST">
+
+                                <div class="form-group">
+                                    <label>Cliente</label><br>
+                                    <select class="form-select form-select-lg mb-3"
+                                        aria-label=".form-select-lg example">
+                                        <option selected> </option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input type="text" class="form-control" name="name" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>OS</label>
+                                    <input type="text" class="form-control" name="os" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>IP</label>
+                                    <input type="text" class="form-control" name="ip" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Hostname</label>
+                                    <input type="text" class="form-control" name="hostname" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>RAM</label>
+                                    <input type="text" class="form-control" name="ram" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>CPU</label>
+                                    <input type="text" class="form-control" name="cpu" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>VGA</label>
+                                    <input type="text" class="form-control" name="vga" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Disco</label>
+                                    <input type="text" class="form-control" name="disk" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Descripción:</label>
+                                    <input type="text" class="form-control" name="description" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Tipo:</label><br>
+                                    <select class="form-select form-select-lg mb-3"
+                                        aria-label=".form-select-lg example">
+                                        <option selected> </option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Estado:</label>
+                                    <input type="text" class="form-control" name="state" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Comentarios</label>
+                                    <input type="text" class="form-control" name="comments" required="1">
+                                </div>
+
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="submit">Agregar</button>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
