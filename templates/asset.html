@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {% block content %}
 <div class="container">
     <div class="row">
@@ -7,86 +8,164 @@
                 <h2><b>Assets</b> <button type="button" class="btn btn-success float-right" data-toggle="modal"
                         data-target="#mymodal">Agregar nuevo</button></h2>
                 <br>
-                <table class="table table-hover table-dark">
+
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissable" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                    {{message}}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <table class="table table-hover table-dark" id="tablaAssets">
                     <tr>
                         <th>ID</th>
                         <th>Cliente</th>
                         <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Tipo</th>
-                        <th>Estado</th>
                         <th>IP</th>
                         <th>Acciones</th>
                     </tr>
 
+                    {% for data in asset %}
                     <tr>
-                        <td>1</td>
-                        <td>Ejemplo</td>
-                        <td>Ejemplo</td>
-                        <td>Oficna principal</td>
-                        <td>11111111111</td>
-                        <td>11111111111</td>
-                        <td>11111111111</td>
+                        {% if data.eliminar != 1 %}
+                        <td>{{data.id}}</td>
+                        <td>{{data.cliente}}</td>
+                        <td>{{data.nombre}}</td>
+                        <td>{{data.descripcion}}</td>
+                        <td>{{data.tipo}}</td>
+                        <td>{{data.ip}}</td>
                         <td>
-                            <a href="" class="btn btn-light btn-xs" data-toggle="modal" data-target="#modalver"><i
-                                    class="bi bi-search"></i></a>
-                            <a href="" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modaledit"><i
-                                    class="bi bi-pencil-square"></i></a>
-                            <a href="" class="btn btn-danger btn-xs"
+
+
+                            <a href="/update/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#modaledit{{data.id}}"><i class="bi bi-pencil-square"></i></a>
+                            <a href="/delete/{{data.id}}" class="btn btn-danger btn-xs"
                                 onclick="return confirm('¿Seguro que quieres borrar?')"><i
                                     class="bi bi-x-square-fill"></i></a>
                         </td>
                     </tr>
+                    {% endif %}
 
-                    <!-- Modal Edit-->
-                    <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+                    <!--Aca va el modal de Editar-->
+                    <div id="modaledit{{data.id}}" class="modal fade" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
 
                                 <div class="modal-header">
-                                    <h4 class="modal-title">Editar Asset</h4>
+                                    <h4 class="modal-title">Editar información</h4>
                                 </div>
 
                                 <div class="modal-body">
                                     <form action="{{url_for('update')}}" method="POST">
 
+                                        <input type="hidden" name="id" value="{{data.id}}">
+
                                         <div class="form-group">
-                                            <label>Name:</label>
-                                            <input type="hidden" name="id" value="{{row.id}}">
-                                            <input type="text" class="form-control" name="name" value="{{row.name}}">
+                                            <label>Cliente</label>
+
+                                            <input type="text" class="form-control" name="cliente"
+                                                value="{{data.cliente}}">
                                         </div>
 
                                         <div class="form-group">
-                                            <label>Email:</label>
-                                            <input type="text" class="form-control" name="email" value="{{row.email}}">
+                                            <label>Nombre</label>
+                                            <input type="text" class="form-control" name="nombre"
+                                                value="{{data.nombre}}">
                                         </div>
 
                                         <div class="form-group">
-                                            <label>Phone:</label>
-                                            <input type="text" class="form-control" name="phone" value="{{row.phone}}">
+                                            <label>OS</label>
+                                            <input type="text" class="form-control" name="os" value="{{data.os}}">
                                         </div>
 
                                         <div class="form-group">
-                                            <button class="btn btn-primary" type="submit">Editar</button>
+                                            <label>IP</label>
+                                            <input type="text" class="form-control" name="ip" value="{{data.ip}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Hostname</label>
+                                            <input type="text" class="form-control" name="hostname"
+                                                value="{{data.hostname}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>RAM</label>
+                                            <input type="text" class="form-control" name="ram" value="{{data.ram}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>CPU</label>
+                                            <input type="text" class="form-control" name="cpu" value="{{data.cpu}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>VGA</label>
+                                            <input type="text" class="form-control" name="vga" value="{{data.vga}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Disco</label>
+                                            <input type="text" class="form-control" name="disco" value="{{data.disco}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Descripción:</label>
+                                            <input type="text" class="form-control" name="descripcion"
+                                                value="{{data.descripcion}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Tipo:</label><br>
+                                            <select class="form-select form-select-lg mb-3"
+                                                aria-label=".form-select-lg example" name="tipo">
+                                                <option selected>{{data.tipo}}</option>
+                                                <option value="Notebook">Notebook</option>
+                                                <option value="Workstation">Workstation</option>
+                                                <option value="Router">Router</option>
+                                                <option value="Switch">Switch</option>
+                                                <option value="Server">Server</option>
+                                                <option value="VM">VM</option>
+                                                <option value="Impresora">Impresora</option>
+                                                <option value="Otros">Otros</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Comentarios:</label>
+                                            <input type="text" class="form-control" name="comentarios"
+                                                value="{{data.comentarios}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit">Actualizar</button>
                                         </div>
 
                                     </form>
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                 </div>
 
                             </div>
                         </div>
                     </div>
+
+
                     {% endfor %}
                 </table>
-
-
             </div>
 
-            <!-- Modal Add -->
+            <!-- Modal agregar -->
             <div id="mymodal" class="modal fade" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -96,83 +175,77 @@
 
                         <div class="modal-body">
 
-                            <form action="" method="POST">
+                            <form action="{{url_for('insert')}}" method="POST">
 
                                 <div class="form-group">
-                                    <label>Cliente</label><br>
-                                    <select class="form-select form-select-lg mb-3"
-                                        aria-label=".form-select-lg example">
-                                        <option selected> </option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
+                                    <label>Cliente</label>
+                                    <input type="text" class="form-control" name="cliente">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Nombre</label>
-                                    <input type="text" class="form-control" name="name" required="1">
+                                    <input type="text" class="form-control" name="nombre">
                                 </div>
 
                                 <div class="form-group">
                                     <label>OS</label>
-                                    <input type="text" class="form-control" name="os" required="1">
+                                    <input type="text" class="form-control" name="os">
                                 </div>
 
                                 <div class="form-group">
                                     <label>IP</label>
-                                    <input type="text" class="form-control" name="ip" required="1">
+                                    <input type="text" class="form-control" name="ip">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Hostname</label>
-                                    <input type="text" class="form-control" name="hostname" required="1">
+                                    <input type="text" class="form-control" name="hostname">
                                 </div>
 
                                 <div class="form-group">
                                     <label>RAM</label>
-                                    <input type="text" class="form-control" name="ram" required="1">
+                                    <input type="text" class="form-control" name="ram">
                                 </div>
 
                                 <div class="form-group">
                                     <label>CPU</label>
-                                    <input type="text" class="form-control" name="cpu" required="1">
+                                    <input type="text" class="form-control" name="cpu">
                                 </div>
 
                                 <div class="form-group">
                                     <label>VGA</label>
-                                    <input type="text" class="form-control" name="vga" required="1">
+                                    <input type="text" class="form-control" name="vga">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Disco</label>
-                                    <input type="text" class="form-control" name="disk" required="1">
+                                    <input type="text" class="form-control" name="disco">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Descripción:</label>
-                                    <input type="text" class="form-control" name="description" required="1">
+                                    <input type="text" class="form-control" name="descripcion">
                                 </div>
 
                                 <div class="form-group">
                                     <label>Tipo:</label><br>
-                                    <select class="form-select form-select-lg mb-3"
-                                        aria-label=".form-select-lg example">
+                                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example"
+                                        name="tipo">
                                         <option selected> </option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
+                                        <option value="Notebook">Notebook</option>
+                                        <option value="Workstation">Workstation</option>
+                                        <option value="Router">Router</option>
+                                        <option value="Switch">Switch</option>
+                                        <option value="Server">Server</option>
+                                        <option value="VM">VM</option>
+                                        <option value="Impresora">Impresora</option>
+                                        <option value="Otros">Otros</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Estado:</label>
-                                    <input type="text" class="form-control" name="state" required="1">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Comentarios</label>
-                                    <input type="text" class="form-control" name="comments" required="1">
+                                    <label>Comentarios:</label>
+                                    <input type="text" class="form-control" name="comentarios">
                                 </div>
 
                                 <div class="form-group">
@@ -191,5 +264,6 @@
         </div>
     </div>
 </div>
+
 
 {% endblock %}
