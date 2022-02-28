@@ -1,15 +1,68 @@
-from email.policy import default
-from flask import Flask, redirect, render_template, request, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import Flask, redirect, render_template, request, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, ValidationError
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.secret_key = "Secret Key"
+
+bcrypt = Bcrypt(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/assetManagement'
 app.config['SQALALCHEMY_TRACK_MODIFICATION'] = False
 
 db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Usuario.query.get(int(user_id))
+
+
+class Usuario(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(20), nullable=False)
+    apellido = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(50), nullable=False, unique=True)
+    cargo = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(80), nullable=False)
+    admin = db.Column(db.Integer, default=0)
+
+
+class LoginForm(FlaskForm):
+    email = StringField(validators=[InputRequired(), Length(
+        min=10, max=50)], render_kw={"placeholder": "Email"})
+    password = PasswordField(validators=[InputRequired(), Length(
+        min=5, max=16)], render_kw={"placeholder": "Password"})
+    submit = SubmitField('Login')
+
+
+class RegisterForm(FlaskForm):
+    nombre = StringField(validators=[InputRequired(), Length(
+        min=4, max=15)], render_kw={"placeholder": "Nombre"})
+    apellido = StringField(validators=[InputRequired(), Length(
+        min=4, max=15)], render_kw={"placeholder": "Apellido"})
+    email = StringField(validators=[InputRequired(), Length(
+        min=10, max=50)], render_kw={"placeholder": "Email"})
+    cargo = StringField(validators=[InputRequired(), Length(
+        min=4, max=15)], render_kw={"placeholder": "Cargo"})
+    password = PasswordField(validators=[InputRequired(), Length(
+        min=5, max=16)], render_kw={"placeholder": "Contraseña"})
+    submit = SubmitField('Registrar')
+
+    def validate_email(self, email):
+        existing_user_email = Usuario.query.filter_by(email=email.data).first()
+        if existing_user_email:
+            raise ValidationError(
+                "El mail ingresado ya se encuentra registrado.")
 
 
 class Asset(db.Model):
@@ -52,12 +105,49 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/login')
-def login_page():
-    return render_template('login.html')
+@app.route('/registrar', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('asset'))
+
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
+                           email=form.email.data, cargo=form.cargo.data, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Registrado correctamente', category='success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Usuario.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash(f'Acceso exitoso, logueado como {user.email}', category='success')
+                return redirect(url_for('asset_page'))
+        else:
+            flash(f'Usuario o contraseña incorrecto. Intente nuevamente.',
+                  category='danger')
+
+    return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('Saliendo...', category='info')
+    return redirect(url_for("login"))
 
 
 @app.route('/asset')
+@login_required  # Requiere estar logueado para visualizar
 def asset_page():
     data = Asset.query.all()
     return render_template('asset.html', asset=data)
@@ -86,7 +176,7 @@ def insert():
         db.session.add(my_data)
         db.session.commit()
 
-        flash(f"Agregado correctamente")
+        flash(f"Agregado correctamente", category='success')
         return redirect(url_for('asset_page'))
 
 
@@ -109,7 +199,7 @@ def update():
         data.modificado = datetime.now().strftime('%d-%m-%Y - %H:%M')
 
         db.session.commit()
-        flash(f"Editado correctamente")
+        flash(f"Editado correctamente", category='success')
         return redirect(url_for('asset_page'))
 
 
@@ -118,7 +208,7 @@ def delete(id):
     data = Asset.query.get(id)
     data.eliminar = 1
     db.session.commit()
-    flash("Eliminado correctamente")
+    flash("Eliminado correctamente", category='success')
     return redirect(url_for('asset_page'))
 
 

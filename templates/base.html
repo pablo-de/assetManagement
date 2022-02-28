@@ -19,6 +19,8 @@
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <div class="container">
             <div class="collapse navbar-collapse" id="navbarNav">
+                <a class="navbar-brand" href="">Asset Management</a>
+                {% if current_user.is_authenticated %}
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="">Clientes</a>
@@ -36,13 +38,32 @@
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link " href="">Salir</a>
+                        <a class="nav-link" href="">{{ current_user.nombre }} {{ current_user.apellido }}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ url_for('logout') }}">Salir</a>
+                    </li>
+                    
                 </ul>
+                {% endif %}
             </div>
         </div>
+
     </nav>
     <br>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">
+        <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
     {% block content %}
 

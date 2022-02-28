@@ -4,11 +4,20 @@
     <form method="POST" class="form-signin">
         {{ form.hidden_tag() }}
         <h1 class="h3 mb-3 font-weight-normal">
-            Login
+            Ingrese mail y contraseña
         </h1>
         <br>
+        {{ form.nombre.label() }}
+        {{ form.nombre(class="form-control", placeholder="Nombre") }}
+
+        {{ form.apellido.label() }}
+        {{ form.apellido(class="form-control", placeholder="Apellido") }}
+
         {{ form.email.label() }}
         {{ form.email(class="form-control", placeholder="Mail") }}
+
+        {{ form.cargo.label() }}
+        {{ form.cargo(class="form-control", placeholder="Cargo") }}
 
         {{ form.password.label() }}
         {{ form.password(class="form-control", placeholder="Contraseña") }}
