@@ -3,19 +3,21 @@
 <div class="container">
     <form method="POST" class="form-signin">
         {{ form.hidden_tag() }}
-        <h1 class="h3 mb-3 font-weight-normal">
-            Login
-        </h1>
-        <br>
-        {{ form.email.label() }}
-        {{ form.email(class="form-control", placeholder="Mail") }}
+        <h1 class="h3 mb-3 font-weight-normal">Login</h1>
+        
+        <div class="form-group">
+            {{ form.email.label() }}
+            {{ form.email(class="form-control", placeholder="Mail") }}
+        </div>
 
-        {{ form.password.label() }}
-        {{ form.password(class="form-control", placeholder="Contraseña") }}
+        <div class="form-group">
+            {{ form.password.label() }}
+            {{ form.password(class="form-control", placeholder="Contraseña") }}
+        </div>
 
-        <br>
-        {{ form.submit(class="btn btn-lg btn-block btn-primary") }}
-        <br>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-lg btn-block btn-primary") }}
+        </div>
 
     </form>
 </div>

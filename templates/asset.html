@@ -9,39 +9,42 @@
                         data-target="#mymodal">Agregar nuevo</button></h2>
                 <br>
 
-                <table class="table table-hover table-dark" id="tablaAssets">
-                    <tr>
-                        <th>ID</th>
-                        <th>Cliente</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Tipo</th>
-                        <th>IP</th>
-                        <th>Acciones</th>
-                    </tr>
-
+                <table class="table" id="tablaAssets">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Tipo</th>
+                            <th>IP</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
                     {% for data in asset %}
-                    <tr>
-                        {% if data.eliminar != 1 %}
-                        <td>{{data.id}}</td>
-                        <td>{{data.cliente}}</td>
-                        <td>{{data.nombre}}</td>
-                        <td>{{data.descripcion}}</td>
-                        <td>{{data.tipo}}</td>
-                        <td>{{data.ip}}</td>
-                        <td>
+                    <tbody>
+                        <tr>
+                            {% if data.eliminar != 1 %}
+                            <td>{{data.id}}</td>
+                            <td>{{data.cliente}}</td>
+                            <td>{{data.nombre}}</td>
+                            <td>{{data.descripcion}}</td>
+                            <td>{{data.tipo}}</td>
+                            <td>{{data.ip}}</td>
+                            <td>
 
 
-                            <a href="/update/{{data.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
-                                data-target="#modalver{{data.id}}"><i class="bi bi-search"></i></a>
+                                <a href="/update_asset/{{data.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
+                                    data-target="#modalver{{data.id}}"><i class="bi bi-search"></i></a>
 
-                            <a href="/update/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#modaledit{{data.id}}"><i class="bi bi-pencil-square"></i></a>
-                            <a href="/delete/{{data.id}}" class="btn btn-danger btn-xs"
-                                onclick="return confirm('¿Seguro que quieres borrar?')"><i
-                                    class="bi bi-x-square-fill"></i></a>
-                        </td>
-                    </tr>
+                                <a href="/update_asset/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
+                                    data-target="#modaledit{{data.id}}"><i class="bi bi-pencil-square"></i></a>
+                                <a href="/delete_asset/{{data.id}}" class="btn btn-danger btn-xs"
+                                    onclick="return confirm('¿Seguro que quieres borrar?')"><i
+                                        class="bi bi-x-square-fill"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
                     {% endif %}
 
                     <!--Modal ver-->
@@ -131,6 +134,24 @@
                                                 value="{{data.comentarios}}" readonly>
                                         </div>
 
+                                        <div class="form-group">
+                                            <label>Creado por:</label>
+                                            <input type="text" class="form-control" name="creador"
+                                                value="{{data.creador}}" readonly>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Creado:</label>
+                                            <input type="text" class="form-control" name="creado"
+                                                value="{{data.creado}}" readonly>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Modificado:</label>
+                                            <input type="text" class="form-control" name="modificado"
+                                                value="{{data.modificado}}" readonly>
+                                        </div>
+
                                     </form>
                                 </div>
 
@@ -152,7 +173,7 @@
                                 </div>
 
                                 <div class="modal-body">
-                                    <form action="{{url_for('update')}}" method="POST">
+                                    <form action="{{url_for('update_asset')}}" method="POST">
 
                                         <input type="hidden" name="id" value="{{data.id}}">
 
@@ -233,15 +254,13 @@
                                                 value="{{data.comentarios}}">
                                         </div>
 
-                                        <div class="form-group">
+                                        <div class="modal-footer">
                                             <button class="btn btn-primary" type="submit">Actualizar</button>
+                                            <button type="button" class="btn btn-danger"
+                                                data-dismiss="modal">Cerrar</button>
                                         </div>
 
                                     </form>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                                 </div>
 
                             </div>
@@ -336,14 +355,12 @@
                                     <input type="text" class="form-control" name="comentarios">
                                 </div>
 
-                                <div class="form-group">
+                                <div class="modal-footer">
                                     <button class="btn btn-primary" type="submit">Agregar</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                                 </div>
 
                             </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                         </div>
 
                     </div>
@@ -354,4 +371,30 @@
 </div>
 
 
+{% endblock %}
+
+<!-- DataTable -->
+{% block scripts %}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tablaAssets').DataTable({
+            "searching": false,
+            language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
+            columns: [
+                { data: 'ID', searchable: false },
+                { data: 'Ciente', searchable: false },
+                { data: 'Nombre', searchable: false },
+                { data: 'Descripcion', searchable: false },
+                { data: 'Tipo', searchable: false },
+                { data: 'IP', searchable: false },
+                { data: 'Acciones', orderable: false, searchable: false }
+
+            ],
+        });
+    });
+</script>
 {% endblock %}
