@@ -32,6 +32,7 @@ def load_user(user_id):
 def make_session_permanent():
     session.permanent = True
 
+
 class Usuario(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(20), nullable=False)
@@ -40,6 +41,7 @@ class Usuario(db.Model, UserMixin):
     cargo = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(80), nullable=False)
     admin = db.Column(db.Integer, default=0)
+
 
 class LoginForm(FlaskForm):
     email = StringField(validators=[InputRequired(), Length(
@@ -113,7 +115,7 @@ def index():
 
 
 @app.route('/registrar', methods=['GET', 'POST'])
-# @login_required
+# @login_required - Sacar comentario en prod
 def registrar():
     if current_user.admin:
         form = RegisterForm()
@@ -166,6 +168,68 @@ def logout():
 @login_required
 def profile():
     return render_template('profile.html')
+
+
+@app.route('/usuarios')
+@login_required
+def usuarios():
+    if current_user.admin:
+        query = Usuario.query.all()
+        return render_template('usuarios.html', users=query)
+    else:
+        return redirect(url_for('asset_page'))
+
+
+@app.route('/update_user', methods=['GET', 'POST'])
+@login_required
+def update_user():
+    if current_user.admin:
+        if request.method == 'POST':
+            data = Usuario.query.get(request.form.get('id'))
+            data.nombre = request.form['nombre']
+            data.apellido = request.form['apellido']
+            data.email = request.form['email']
+            data.cargo = request.form['cargo']
+            db.session.commit()
+            flash(f"Datos del usuario editados correctamente", category='success')
+            return redirect(url_for('usuarios'))
+    else:
+        return redirect(url_for('asset_page'))
+
+
+@app.route('/changepwd', methods=['GET', 'POST'])
+@login_required
+def changepwd():
+    if current_user.admin:
+        if request.method == 'POST':
+            data = Usuario.query.get(request.form.get('id'))
+
+            if request.form['password'] != '':
+                hashed_password = bcrypt.generate_password_hash(
+                    request.form['password'])
+                data.password = hashed_password
+
+                db.session.commit()
+                flash(f"Contraseña cambiada correctamente", category='success')
+                return redirect(url_for('usuarios'))
+            else:
+                flash(f"La contraseña no puede estar vacia", category='success')
+                return redirect(url_for('usuarios'))
+    else:
+        return redirect(url_for('asset_page'))
+
+
+@app.route('/delete_user/<id>/', methods=['GET', 'POST'])
+@login_required
+def delete_user(id):
+    if current_user.admin:
+        user = Usuario.query.get(id)
+        db.session.delete(user)
+        db.session.commit()
+        flash("Usuario eliminado correctamente", category='success')
+        return redirect(url_for('usuarios'))
+    else:
+        return redirect(url_for('asset_page'))
 
 
 @app.route('/asset')
@@ -237,45 +301,6 @@ def delete_asset(id):
     flash("Eliminado correctamente", category='success')
     return redirect(url_for('asset_page'))
 
-
-@app.route('/usuarios')
-@login_required 
-def usuarios():
-    if current_user.admin:
-        query = Usuario.query.all()
-        return render_template('usuarios.html', users=query)
-    else:
-        return redirect(url_for('asset_page'))
-
-@app.route('/update_user', methods=['GET', 'POST'])
-@login_required
-def update_user():
-    if current_user.admin:
-        if request.method == 'POST':
-            data = Usuario.query.get(request.form.get('id'))
-            data.nombre = request.form['nombre']
-            data.apellido = request.form['apellido']
-            data.email = request.form['email']
-            data.cargo = request.form['cargo']
-            #data.password = request.form['password']
-
-            db.session.commit()
-            flash(f"Usuario editado correctamente", category='success')
-            return redirect(url_for('usuarios'))
-    else:
-        return redirect(url_for('asset_page'))
-
-@app.route('/delete_user/<id>/', methods=['GET', 'POST'])
-@login_required
-def delete_user(id):
-    if current_user.admin:
-        user = Usuario.query.get(id)
-        db.session.delete(user)
-        db.session.commit()
-        flash("Usuario eliminado correctamente", category='success')
-        return redirect(url_for('usuarios'))
-    else:
-        return redirect(url_for('asset_page'))
 
 @app.route('/credentials')
 @login_required
