@@ -5,8 +5,12 @@
         <div class="col-md-12">
 
             <div class="jumbotron p-3">
-                <h2><b>Assets</b> <button type="button" class="btn btn-success float-right" data-toggle="modal"
-                        data-target="#mymodal">Agregar nuevo</button></h2>
+                <h2><b>Assets</b>
+                </h2>
+                <a href="{{url_for('list_asset_delete')}}" class="btn btn-outline-danger" title="Eliminados">Eliminados</a>
+                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#mymodal" title="Agregar">Agregar
+                    nuevo</button>
+                <br>
                 <br>
 
                 <table class="table" id="tablaAssets">
@@ -35,13 +39,13 @@
 
 
                                 <a href="/update_asset/{{data.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
-                                    data-target="#modalver{{data.id}}"><i class="bi bi-search"></i></a>
+                                    data-target="#modalver{{data.id}}" title="Ver"><i class="bi bi-search"></i></a>
 
                                 <a href="/update_asset/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
-                                    data-target="#modaledit{{data.id}}"><i class="bi bi-pencil-square"></i></a>
+                                    data-target="#modaledit{{data.id}}" title="Editar"><i class="bi bi-pencil-square"></i></a>
                                 <a href="/delete_asset/{{data.id}}" class="btn btn-danger btn-xs"
                                     onclick="return confirm('¿Seguro que quieres borrar?')"><i
-                                        class="bi bi-x-square-fill"></i></a>
+                                        class="bi bi-x-square-fill" title="Eliminar"></i></a>
                             </td>
                         </tr>
                     </tbody>

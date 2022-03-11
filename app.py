@@ -164,10 +164,29 @@ def logout():
     return redirect(url_for("login"))
 
 
-@app.route('/profile')
+@app.route('/profile/<id>', methods=['GET', 'POST'])
 @login_required
-def profile():
-    return render_template('profile.html')
+def profile(id):
+    user = Usuario.query.filter_by(id=id).first()
+
+    return render_template('profile.html', user=user)
+
+
+@app.route('/update_profile', methods=['GET', 'POST'])
+@login_required
+def update_profile():
+    if current_user.is_authenticated:
+        if request.method == 'POST':
+            data = Usuario.query.get(request.form.get('id'))
+            data.nombre = request.form['nombre']
+            data.apellido = request.form['apellido']
+            data.email = request.form['email']
+            data.cargo = request.form['cargo']
+            db.session.commit()
+            flash(f"Datos del usuario editados correctamente", category='success')
+            return redirect(url_for('usuarios'))
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/usuarios')
@@ -190,6 +209,7 @@ def update_user():
             data.apellido = request.form['apellido']
             data.email = request.form['email']
             data.cargo = request.form['cargo']
+            data.admin = request.form['admin']
             db.session.commit()
             flash(f"Datos del usuario editados correctamente", category='success')
             return redirect(url_for('usuarios'))
@@ -237,6 +257,23 @@ def delete_user(id):
 def asset_page():
     query = Asset.query.all()
     return render_template('asset.html', asset=query)
+
+
+@app.route('/list_asset_delete')
+@login_required
+def list_asset_delete():
+    query = Asset.query.all()
+    return render_template('asset_delete.html', asset=query)
+
+
+@app.route('/asset_restore/<id>/')
+@login_required
+def asset_restore(id):
+    data = Asset.query.get(id)
+    data.eliminar = 0
+    db.session.commit()
+    flash("Restaurado correctamente", category='success')
+    return redirect(url_for('asset_page'))
 
 
 @app.route('/insert', methods=['POST'])

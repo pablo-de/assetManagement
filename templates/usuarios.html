@@ -27,12 +27,13 @@
                             <td>{{user.cargo}}</td>
                             <td>
                                 <a href="/update_user/{{user.id}}" class="btn btn-info btn-xs" data-toggle="modal"
-                                    data-target="#modaledit{{user.id}}"><i class="bi bi-pencil-square"></i></a>
+                                    data-target="#modaledit{{user.id}}" title="Editar"><i class="bi bi-pencil-square"></i></a>
+
                                 <a href="/changepwd/{{user.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
-                                    data-target="#modaleditpwd{{user.id}}"><i class="bi bi-lock"></i></a>
+                                    data-target="#modaleditpwd{{user.id}}" title="Editar contraseña"><i class="bi bi-lock"></i></a>
                                 <a href="/delete_user/{{user.id}}" class="btn btn-danger btn-xs"
                                     onclick="return confirm('¿Seguro que quieres borrar?')"><i
-                                        class="bi bi-x-square-fill"></i></a>
+                                        class="bi bi-x-square-fill" title="Eliminar"></i></a>
                             </td>
                         </tr>
                     </tbody>
@@ -74,7 +75,21 @@
                                             <label>Cargo</label>
                                             <input type="text" class="form-control" name="cargo" value="{{user.cargo}}">
                                         </div>
-
+                                        {% if user.admin != 1 %}
+                                        <div class="form-group">
+                                            <label class="radio-inline"> Usuario admin? <br>
+                                                <input type="radio" value="1" name="admin">True
+                                                <input type="radio" value="0" name="admin" checked>False
+                                            </label>
+                                        </div>
+                                        {% elif user.admin != 0 %}
+                                        <div class="form-group">
+                                            <label class="radio-inline"> Usuario admin? <br>
+                                                <input type="radio" value="1" name="admin"checked>True
+                                                <input type="radio" value="0" name="admin" >False
+                                            </label>
+                                        </div>
+                                        {% endif %}
                                         <div class="modal-footer">
                                             <button class="btn btn-primary" type="submit">Actualizar</button>
                                             <button type="button" class="btn btn-danger"

@@ -51,7 +51,7 @@
                 {% endif %}
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('profile') }}">{{ current_user.nombre }} {{ current_user.apellido }}</a>
+                        <a class="nav-link" href="{{ url_for('profile', id=current_user.id) }}">{{ current_user.nombre }} {{ current_user.apellido }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="{{ url_for('logout') }}">Salir</a>
