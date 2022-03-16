@@ -108,6 +108,27 @@ class Asset(db.Model):
         self.modificado = modificado
         self.creador = creador
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'cliente': self.cliente,
+            'nombre': self.nombre,
+            'os': self.os,
+            'ip': self.ip,
+            'hostname': self.hostname,
+            'ram': self.ram,
+            'cpu': self.cpu,
+            'vga': self.vga,
+            'disco': self.disco,
+            'descripcion': self.descripcion,
+            'tipo': self.tipo,
+            'comentarios': self.comentarios,
+            'creado': self.creado,
+            'modificado': self.modificado,
+            'creador': self.creador,
+            'eliminado': self.eliminar
+        }
+
 
 @app.route('/')
 def index():
@@ -168,7 +189,6 @@ def logout():
 @login_required
 def profile(id):
     user = Usuario.query.filter_by(id=id).first()
-
     return render_template('profile.html', user=user)
 
 
@@ -196,6 +216,7 @@ def usuarios():
         query = Usuario.query.all()
         return render_template('usuarios.html', users=query)
     else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
 
@@ -214,6 +235,7 @@ def update_user():
             flash(f"Datos del usuario editados correctamente", category='success')
             return redirect(url_for('usuarios'))
     else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
 
@@ -236,6 +258,7 @@ def changepwd():
                 flash(f"La contraseña no puede estar vacia", category='success')
                 return redirect(url_for('usuarios'))
     else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
 
@@ -249,15 +272,23 @@ def delete_user(id):
         flash("Usuario eliminado correctamente", category='success')
         return redirect(url_for('usuarios'))
     else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
 
 @app.route('/asset')
 @login_required  # Requiere estar logueado para visualizar
 def asset_page():
-    query = Asset.query.all()
-    return render_template('asset.html', asset=query)
+    return render_template('asset.html', asset = [asset.to_dict() for asset in Asset.query])
 
+@app.route('/api/asset')
+@login_required
+def asset():
+    if current_user.admin:
+        return {'asset': [asset.to_dict() for asset in Asset.query]}
+    else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
+        return redirect(url_for('asset_page'))
 
 @app.route('/list_asset_delete')
 @login_required
@@ -266,9 +297,9 @@ def list_asset_delete():
     return render_template('asset_delete.html', asset=query)
 
 
-@app.route('/asset_restore/<id>/')
+@app.route('/restore_asset/<id>/')
 @login_required
-def asset_restore(id):
+def restore_asset(id):
     data = Asset.query.get(id)
     data.eliminar = 0
     db.session.commit()
@@ -276,9 +307,9 @@ def asset_restore(id):
     return redirect(url_for('asset_page'))
 
 
-@app.route('/insert', methods=['POST'])
+@app.route('/insert_asset', methods=['POST'])
 @login_required
-def insert():
+def insert_asset():
     if request.method == 'POST':
         cliente = request.form['cliente']
         nombre = request.form['nombre']
@@ -293,8 +324,8 @@ def insert():
         tipo = request.form['tipo']
         comentarios = request.form['comentarios']
         creado = datetime.now().strftime('%d-%m-%Y - %H:%M')
-        modificado = " "
-        creador = current_user.apellido
+        modificado = ""
+        creador = current_user.nombre + ' ' + current_user.apellido
 
         my_data = Asset(cliente, nombre, os, ip, hostname, ram,
                         cpu, vga, disco, descripcion, tipo, comentarios, creado, modificado, creador)
@@ -353,8 +384,7 @@ def clientes():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template("error.html", error="Página no encontrada..."), 404
-
+ return render_template("error.html"), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

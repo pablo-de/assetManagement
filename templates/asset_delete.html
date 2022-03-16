@@ -5,8 +5,8 @@
         <div class="col-md-12">
 
             <div class="jumbotron p-3">
-                <h2><b>Asset Eliminados</b>
-                <a href="{{url_for('asset_page')}}" class="btn btn-info float-right">Regresar</a> 
+                <h2><b>Asset Eliminados</b><br>
+                    <a href="{{url_for('asset_page')}}" class="btn btn-outline-info"><i class="bi bi-arrow-left-square"></i> Regresar</a>
                 </h2>
                 <br>
 
@@ -38,8 +38,8 @@
                                 <a href="/update_asset/{{data.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
                                     data-target="#modalver{{data.id}}" title="Ver"><i class="bi bi-search"></i></a>
 
-                                <a href="/asset_restore/{{data.id}}" class="btn btn-info btn-xs" onclick="return confirm('¿Seguro que quieres restaurar?')"><i
-                                        class="bi bi-skip-backward-btn" title="Restaurar"></i></a>
+                                <a href="/restore_asset/{{data.id}}" class="btn btn-info btn-xs"><i
+                                        class="bi bi-arrow-counterclockwise" title="Restaurar"></i></a>
                             </td>
                         </tr>
                     </tbody>

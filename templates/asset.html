@@ -7,9 +7,10 @@
             <div class="jumbotron p-3">
                 <h2><b>Assets</b>
                 </h2>
-                <a href="{{url_for('list_asset_delete')}}" class="btn btn-outline-danger" title="Eliminados">Eliminados</a>
-                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#mymodal" title="Agregar">Agregar
-                    nuevo</button>
+                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#mymodal"
+                    title="Agregar">Agregar nuevo</button>
+                <a href="{{url_for('list_asset_delete')}}" class="btn btn-outline-danger"
+                    title="Eliminados">Eliminados</a>
                 <br>
                 <br>
 
@@ -28,7 +29,7 @@
                     {% for data in asset %}
                     <tbody>
                         <tr>
-                            {% if data.eliminar != 1 %}
+                            {% if data.eliminado != 1 %}
                             <td>{{data.id}}</td>
                             <td>{{data.cliente}}</td>
                             <td>{{data.nombre}}</td>
@@ -42,9 +43,9 @@
                                     data-target="#modalver{{data.id}}" title="Ver"><i class="bi bi-search"></i></a>
 
                                 <a href="/update_asset/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
-                                    data-target="#modaledit{{data.id}}" title="Editar"><i class="bi bi-pencil-square"></i></a>
-                                <a href="/delete_asset/{{data.id}}" class="btn btn-danger btn-xs"
-                                    onclick="return confirm('¿Seguro que quieres borrar?')"><i
+                                    data-target="#modaledit{{data.id}}" title="Editar"><i
+                                        class="bi bi-pencil-square"></i></a>
+                                <a href="/delete_asset/{{data.id}}" class="btn btn-danger btn-xs"><i
                                         class="bi bi-x-square-fill" title="Eliminar"></i></a>
                             </td>
                         </tr>
@@ -286,7 +287,7 @@
 
                         <div class="modal-body">
 
-                            <form action="{{url_for('insert')}}" method="POST">
+                            <form action="{{url_for('insert_asset')}}" method="POST">
 
                                 <div class="form-group">
                                     <label>Cliente</label>
@@ -386,6 +387,7 @@
 <script>
     $(document).ready(function () {
         $('#tablaAssets').DataTable({
+            ajax: '/api/asset',
             "searching": false,
             language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
             columns: [
