@@ -13,268 +13,270 @@
                     title="Eliminados">Eliminados</a>
                 <br>
                 <br>
+                <div class="table-responsive-sm">
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Nombre</th>
+                                <th>Descripción</th>
+                                <th>Tipo</th>
+                                <th>IP</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        {% for data in asset %}
+                        <tbody>
+                            <tr>
+                                {% if data.eliminado != 1 %}
+                                <td>{{data.id}}</td>
+                                <td>{{data.cliente}}</td>
+                                <td>{{data.nombre}}</td>
+                                <td>{{data.descripcion}}</td>
+                                <td>{{data.tipo}}</td>
+                                <td>{{data.ip}}</td>
+                                <td>
+                                    <a href="/update_asset/{{data.id}}" class="btn btn-warning btn-xs"
+                                        data-toggle="modal" data-target="#modalver{{data.id}}" title="Ver"><i
+                                            class="bi bi-search"></i></a>
 
-                <table class="table" id="tablaAssets">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Cliente</th>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Tipo</th>
-                            <th>IP</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    {% for data in asset %}
-                    <tbody>
-                        <tr>
-                            {% if data.eliminado != 1 %}
-                            <td>{{data.id}}</td>
-                            <td>{{data.cliente}}</td>
-                            <td>{{data.nombre}}</td>
-                            <td>{{data.descripcion}}</td>
-                            <td>{{data.tipo}}</td>
-                            <td>{{data.ip}}</td>
-                            <td>
+                                    <a href="/update_asset/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
+                                        data-target="#modaledit{{data.id}}" title="Editar"><i
+                                            class="bi bi-pencil-square"></i></a>
+                                    <a href="/delete_asset/{{data.id}}" class="btn btn-danger btn-xs"><i
+                                            class="bi bi-x-square-fill" title="Eliminar"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        {% endif %}
 
+                        <!--Modal ver-->
+                        <div id="modalver{{data.id}}" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
 
-                                <a href="/update_asset/{{data.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
-                                    data-target="#modalver{{data.id}}" title="Ver"><i class="bi bi-search"></i></a>
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Asset: {{data.nombre}}</h4>
+                                    </div>
 
-                                <a href="/update_asset/{{data.id}}" class="btn btn-info btn-xs" data-toggle="modal"
-                                    data-target="#modaledit{{data.id}}" title="Editar"><i
-                                        class="bi bi-pencil-square"></i></a>
-                                <a href="/delete_asset/{{data.id}}" class="btn btn-danger btn-xs"><i
-                                        class="bi bi-x-square-fill" title="Eliminar"></i></a>
-                            </td>
-                        </tr>
-                    </tbody>
-                    {% endif %}
+                                    <div class="modal-body">
+                                        <form action="" method="POST">
 
-                    <!--Modal ver-->
-                    <div id="modalver{{data.id}}" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
+                                            <input type="hidden" name="id" value="{{data.id}}">
 
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Asset: {{data.nombre}}</h4>
+                                            <div class="form-group">
+                                                <label>Cliente</label>
+
+                                                <input type="text" class="form-control" name="cliente"
+                                                    value="{{data.cliente}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" class="form-control" name="nombre"
+                                                    value="{{data.nombre}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>OS</label>
+                                                <input type="text" class="form-control" name="os" value="{{data.os}}"
+                                                    readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>IP</label>
+                                                <input type="text" class="form-control" name="ip" value="{{data.ip}}"
+                                                    readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Hostname</label>
+                                                <input type="text" class="form-control" name="hostname"
+                                                    value="{{data.hostname}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>RAM</label>
+                                                <input type="text" class="form-control" name="ram" value="{{data.ram}}"
+                                                    readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>CPU</label>
+                                                <input type="text" class="form-control" name="cpu" value="{{data.cpu}}"
+                                                    readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>VGA</label>
+                                                <input type="text" class="form-control" name="vga" value="{{data.vga}}"
+                                                    readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Disco</label>
+                                                <input type="text" class="form-control" name="disco"
+                                                    value="{{data.disco}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Descripción:</label>
+                                                <input type="text" class="form-control" name="descripcion"
+                                                    value="{{data.descripcion}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Tipo:</label><br>
+                                                <input type="text" class="form-control" name="tipo"
+                                                    value="{{data.tipo}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Comentarios:</label>
+                                                <input type="text" class="form-control" name="comentarios"
+                                                    value="{{data.comentarios}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Creado por:</label>
+                                                <input type="text" class="form-control" name="creador"
+                                                    value="{{data.creador}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Creado:</label>
+                                                <input type="text" class="form-control" name="creado"
+                                                    value="{{data.creado}}" readonly>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Modificado:</label>
+                                                <input type="text" class="form-control" name="modificado"
+                                                    value="{{data.modificado}}" readonly>
+                                            </div>
+
+                                        </form>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">Cerrar</button>
+                                    </div>
+
                                 </div>
-
-                                <div class="modal-body">
-                                    <form action="" method="POST">
-
-                                        <input type="hidden" name="id" value="{{data.id}}">
-
-                                        <div class="form-group">
-                                            <label>Cliente</label>
-
-                                            <input type="text" class="form-control" name="cliente"
-                                                value="{{data.cliente}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Nombre</label>
-                                            <input type="text" class="form-control" name="nombre"
-                                                value="{{data.nombre}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>OS</label>
-                                            <input type="text" class="form-control" name="os" value="{{data.os}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>IP</label>
-                                            <input type="text" class="form-control" name="ip" value="{{data.ip}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Hostname</label>
-                                            <input type="text" class="form-control" name="hostname"
-                                                value="{{data.hostname}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>RAM</label>
-                                            <input type="text" class="form-control" name="ram" value="{{data.ram}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>CPU</label>
-                                            <input type="text" class="form-control" name="cpu" value="{{data.cpu}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>VGA</label>
-                                            <input type="text" class="form-control" name="vga" value="{{data.vga}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Disco</label>
-                                            <input type="text" class="form-control" name="disco" value="{{data.disco}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Descripción:</label>
-                                            <input type="text" class="form-control" name="descripcion"
-                                                value="{{data.descripcion}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Tipo:</label><br>
-                                            <input type="text" class="form-control" name="tipo" value="{{data.tipo}}"
-                                                readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Comentarios:</label>
-                                            <input type="text" class="form-control" name="comentarios"
-                                                value="{{data.comentarios}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Creado por:</label>
-                                            <input type="text" class="form-control" name="creador"
-                                                value="{{data.creador}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Creado:</label>
-                                            <input type="text" class="form-control" name="creado"
-                                                value="{{data.creado}}" readonly>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Modificado:</label>
-                                            <input type="text" class="form-control" name="modificado"
-                                                value="{{data.modificado}}" readonly>
-                                        </div>
-
-                                    </form>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-                                </div>
-
                             </div>
                         </div>
-                    </div>
 
-                    <!--Aca va el modal de Editar-->
-                    <div id="modaledit{{data.id}}" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
+                        <!--Aca va el modal de Editar-->
+                        <div id="modaledit{{data.id}}" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
 
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Editar información</h4>
+                                    <div class="modal-header">
+                                        <h4 class="modal-title">Editar información</h4>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <form action="{{url_for('update_asset')}}" method="POST">
+
+                                            <input type="hidden" name="id" value="{{data.id}}">
+
+                                            <div class="form-group">
+                                                <label>Cliente</label>
+
+                                                <input type="text" class="form-control" name="cliente"
+                                                    value="{{data.cliente}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Nombre</label>
+                                                <input type="text" class="form-control" name="nombre"
+                                                    value="{{data.nombre}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>OS</label>
+                                                <input type="text" class="form-control" name="os" value="{{data.os}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>IP</label>
+                                                <input type="text" class="form-control" name="ip" value="{{data.ip}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Hostname</label>
+                                                <input type="text" class="form-control" name="hostname"
+                                                    value="{{data.hostname}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>RAM</label>
+                                                <input type="text" class="form-control" name="ram" value="{{data.ram}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>CPU</label>
+                                                <input type="text" class="form-control" name="cpu" value="{{data.cpu}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>VGA</label>
+                                                <input type="text" class="form-control" name="vga" value="{{data.vga}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Disco</label>
+                                                <input type="text" class="form-control" name="disco"
+                                                    value="{{data.disco}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Descripción:</label>
+                                                <input type="text" class="form-control" name="descripcion"
+                                                    value="{{data.descripcion}}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Tipo:</label><br>
+                                                <select class="form-select form-select-lg mb-3"
+                                                    aria-label=".form-select-lg example" name="tipo">
+                                                    <option selected>{{data.tipo}}</option>
+                                                    <option value="Notebook">Notebook</option>
+                                                    <option value="Workstation">Workstation</option>
+                                                    <option value="Router">Router</option>
+                                                    <option value="Switch">Switch</option>
+                                                    <option value="Server">Server</option>
+                                                    <option value="VM">VM</option>
+                                                    <option value="Impresora">Impresora</option>
+                                                    <option value="Otros">Otros</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Comentarios:</label>
+                                                <input type="text" class="form-control" name="comentarios"
+                                                    value="{{data.comentarios}}">
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button class="btn btn-primary" type="submit">Actualizar</button>
+                                                <button type="button" class="btn btn-danger"
+                                                    data-dismiss="modal">Cerrar</button>
+                                            </div>
+
+                                        </form>
+                                    </div>
+
                                 </div>
-
-                                <div class="modal-body">
-                                    <form action="{{url_for('update_asset')}}" method="POST">
-
-                                        <input type="hidden" name="id" value="{{data.id}}">
-
-                                        <div class="form-group">
-                                            <label>Cliente</label>
-
-                                            <input type="text" class="form-control" name="cliente"
-                                                value="{{data.cliente}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Nombre</label>
-                                            <input type="text" class="form-control" name="nombre"
-                                                value="{{data.nombre}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>OS</label>
-                                            <input type="text" class="form-control" name="os" value="{{data.os}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>IP</label>
-                                            <input type="text" class="form-control" name="ip" value="{{data.ip}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Hostname</label>
-                                            <input type="text" class="form-control" name="hostname"
-                                                value="{{data.hostname}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>RAM</label>
-                                            <input type="text" class="form-control" name="ram" value="{{data.ram}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>CPU</label>
-                                            <input type="text" class="form-control" name="cpu" value="{{data.cpu}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>VGA</label>
-                                            <input type="text" class="form-control" name="vga" value="{{data.vga}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Disco</label>
-                                            <input type="text" class="form-control" name="disco" value="{{data.disco}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Descripción:</label>
-                                            <input type="text" class="form-control" name="descripcion"
-                                                value="{{data.descripcion}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Tipo:</label><br>
-                                            <select class="form-select form-select-lg mb-3"
-                                                aria-label=".form-select-lg example" name="tipo">
-                                                <option selected>{{data.tipo}}</option>
-                                                <option value="Notebook">Notebook</option>
-                                                <option value="Workstation">Workstation</option>
-                                                <option value="Router">Router</option>
-                                                <option value="Switch">Switch</option>
-                                                <option value="Server">Server</option>
-                                                <option value="VM">VM</option>
-                                                <option value="Impresora">Impresora</option>
-                                                <option value="Otros">Otros</option>
-                                            </select>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Comentarios:</label>
-                                            <input type="text" class="form-control" name="comentarios"
-                                                value="{{data.comentarios}}">
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button class="btn btn-primary" type="submit">Actualizar</button>
-                                            <button type="button" class="btn btn-danger"
-                                                data-dismiss="modal">Cerrar</button>
-                                        </div>
-
-                                    </form>
-                                </div>
-
                             </div>
                         </div>
-                    </div>
 
 
-                    {% endfor %}
-                </table>
+                        {% endfor %}
+                    </table>
+                </div>
             </div>
 
             <!-- Modal agregar -->
@@ -376,31 +378,4 @@
 </div>
 
 
-{% endblock %}
-
-<!-- DataTable -->
-{% block scripts %}
-
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-
-<script>
-    $(document).ready(function () {
-        $('#tablaAssets').DataTable({
-            ajax: '/api/asset',
-            "searching": false,
-            language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
-            columns: [
-                { data: 'ID', searchable: false },
-                { data: 'Ciente', searchable: false },
-                { data: 'Nombre', searchable: false },
-                { data: 'Descripcion', searchable: false },
-                { data: 'Tipo', searchable: false },
-                { data: 'IP', searchable: false },
-                { data: 'Acciones', orderable: false, searchable: false }
-
-            ],
-        });
-    });
-</script>
 {% endblock %}

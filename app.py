@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
-from flask import Flask, redirect, render_template, request, url_for, flash, session, jsonify
+from flask import Flask, redirect, render_template, request, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user, user_logged_in
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
-from getpass import getpass
+import json
 
 app = Flask(__name__)
 app.secret_key = "Secret Key"
@@ -281,11 +281,17 @@ def delete_user(id):
 def asset_page():
     return render_template('asset.html', asset = [asset.to_dict() for asset in Asset.query])
 
+@app.route('/test_asset')
+@login_required  # Requiere estar logueado para visualizar
+def asset_test():
+    return render_template('includes/asset_tabla.html')
+
+
 @app.route('/api/asset')
 @login_required
 def asset():
-    if current_user.admin:
-        return {'asset': [asset.to_dict() for asset in Asset.query]}
+    if current_user.admin:   
+        return {'data': [asset.to_dict() for asset in Asset.query]}
     else:
         flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
