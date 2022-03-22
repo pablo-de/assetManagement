@@ -1,148 +1,143 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-md-12">
+    <div class="jumbotron p-3">
+        <h2><b>Usuarios</b></h2>
+        <a href="{{ url_for('registrar') }}" class="btn btn-outline-success" title="Registrar">Registrar
+            nuevo</a>
+        <br><br>
+        <div class="table-responsive">
+            <table class="table" id="tablaUsuarios">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Email</th>
+                        <th>Cargo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                {% for user in users %}
+                <tbody>
+                    <tr>
+                        <td>{{user.nombre}}</td>
+                        <td>{{user.apellido}}</td>
+                        <td>{{user.email}}</td>
+                        <td>{{user.cargo}}</td>
+                        <td>
+                            <a href="/update_user/{{user.id}}" class="btn btn-info btn-xs" data-toggle="modal"
+                                data-target="#modaledit{{user.id}}" title="Editar"><i
+                                    class="bi bi-pencil-square"></i></a>
 
-            <div class="jumbotron p-3">
-                <h2><b>Usuarios</b></h2>
-                <a href="{{ url_for('registrar') }}" class="btn btn-outline-success" title="Registrar">Registrar
-                    nuevo</a>
-                <br><br>
+                            <a href="/changepwd/{{user.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
+                                data-target="#modaleditpwd{{user.id}}" title="Editar contraseña"><i
+                                    class="bi bi-lock"></i></a>
+                            <a href="/delete_user/{{user.id}}" class="btn btn-danger btn-xs"><i
+                                    class="bi bi-x-square-fill" title="Eliminar"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
 
-                <table class="table" id="tablaUsuarios">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Email</th>
-                            <th>Cargo</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    {% for user in users %}
-                    <tbody>
-                        <tr>
-                            <td>{{user.nombre}}</td>
-                            <td>{{user.apellido}}</td>
-                            <td>{{user.email}}</td>
-                            <td>{{user.cargo}}</td>
-                            <td>
-                                <a href="/update_user/{{user.id}}" class="btn btn-info btn-xs" data-toggle="modal"
-                                    data-target="#modaledit{{user.id}}" title="Editar"><i
-                                        class="bi bi-pencil-square"></i></a>
+                <!--Modal Editar-->
+                <div id="modaledit{{user.id}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
 
-                                <a href="/changepwd/{{user.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
-                                    data-target="#modaleditpwd{{user.id}}" title="Editar contraseña"><i
-                                        class="bi bi-lock"></i></a>
-                                <a href="/delete_user/{{user.id}}" class="btn btn-danger btn-xs"><i
-                                        class="bi bi-x-square-fill" title="Eliminar"></i></a>
-                            </td>
-                        </tr>
-                    </tbody>
-
-                    <!--Modal Editar-->
-                    <div id="modaledit{{user.id}}" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Editar información</h4>
-                                </div>
-
-                                <div class="modal-body">
-                                    <form action="{{url_for('update_user')}}" method="POST">
-
-                                        <input type="hidden" name="id" value="{{user.id}}">
-
-                                        <div class="form-group">
-                                            <label>Nombre</label>
-
-                                            <input type="text" class="form-control" name="nombre"
-                                                value="{{user.nombre}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Apellido</label>
-                                            <input type="text" class="form-control" name="apellido"
-                                                value="{{user.apellido}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Email</label>
-                                            <input type="email" class="form-control" name="email"
-                                                value="{{user.email}}">
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label>Cargo</label>
-                                            <input type="text" class="form-control" name="cargo" value="{{user.cargo}}">
-                                        </div>
-                                        {% if user.admin != 1 %}
-                                        <div class="form-group">
-                                            <label class="radio-inline"> Usuario admin? <br>
-                                                <input type="radio" value="1" name="admin">True
-                                                <input type="radio" value="0" name="admin" checked>False
-                                            </label>
-                                        </div>
-                                        {% elif user.admin != 0 %}
-                                        <div class="form-group">
-                                            <label class="radio-inline"> Usuario admin? <br>
-                                                <input type="radio" value="1" name="admin" checked>True
-                                                <input type="radio" value="0" name="admin">False
-                                            </label>
-                                        </div>
-                                        {% endif %}
-                                        <div class="modal-footer">
-                                            <button class="btn btn-primary" type="submit">Actualizar</button>
-                                            <button type="button" class="btn btn-danger"
-                                                data-dismiss="modal">Cerrar</button>
-                                        </div>
-
-                                    </form>
-                                </div>
-
+                            <div class="modal-header">
+                                <h4 class="modal-title">Editar información</h4>
                             </div>
+
+                            <div class="modal-body">
+                                <form action="{{url_for('update_user')}}" method="POST">
+
+                                    <input type="hidden" name="id" value="{{user.id}}">
+
+                                    <div class="form-group">
+                                        <label>Nombre</label>
+
+                                        <input type="text" class="form-control" name="nombre" value="{{user.nombre}}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Apellido</label>
+                                        <input type="text" class="form-control" name="apellido"
+                                            value="{{user.apellido}}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" name="email" value="{{user.email}}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Cargo</label>
+                                        <input type="text" class="form-control" name="cargo" value="{{user.cargo}}">
+                                    </div>
+                                    {% if user.admin != 1 %}
+                                    <div class="form-group">
+                                        <label class="radio-inline"> Usuario admin? <br>
+                                            <input type="radio" value="1" name="admin">True
+                                            <input type="radio" value="0" name="admin" checked>False
+                                        </label>
+                                    </div>
+                                    {% elif user.admin != 0 %}
+                                    <div class="form-group">
+                                        <label class="radio-inline"> Usuario admin? <br>
+                                            <input type="radio" value="1" name="admin" checked>True
+                                            <input type="radio" value="0" name="admin">False
+                                        </label>
+                                    </div>
+                                    {% endif %}
+                                    <div class="modal-footer">
+                                        <button class="btn btn-primary" type="submit">Actualizar</button>
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">Cerrar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+
                         </div>
                     </div>
+                </div>
 
-                    <!--Modal Editar contraseña-->
-                    <div id="modaleditpwd{{user.id}}" class="modal fade" role="dialog">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
+                <!--Modal Editar contraseña-->
+                <div id="modaleditpwd{{user.id}}" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
 
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Editar contraseña</h4>
-                                </div>
-
-                                <div class="modal-body">
-                                    <form action="{{url_for('changepwd')}}" method="POST">
-
-                                        <input type="hidden" name="id" value="{{user.id}}">
-
-                                        <div class="form-group">
-                                            <label>Nueva contraseña</label>
-                                            <input type="password" class="form-control" name="password">
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button class="btn btn-primary" type="submit">Actualizar</button>
-                                            <button type="button" class="btn btn-danger"
-                                                data-dismiss="modal">Cerrar</button>
-                                        </div>
-
-                                    </form>
-                                </div>
-
+                            <div class="modal-header">
+                                <h4 class="modal-title">Editar contraseña</h4>
                             </div>
+
+                            <div class="modal-body">
+                                <form action="{{url_for('changepwd')}}" method="POST">
+
+                                    <input type="hidden" name="id" value="{{user.id}}">
+
+                                    <div class="form-group">
+                                        <label>Nueva contraseña</label>
+                                        <input type="password" class="form-control" name="password">
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button class="btn btn-primary" type="submit">Actualizar</button>
+                                        <button type="button" class="btn btn-danger"
+                                            data-dismiss="modal">Cerrar</button>
+                                    </div>
+
+                                </form>
+                            </div>
+
                         </div>
                     </div>
+                </div>
 
 
-                    {% endfor %}
-                </table>
-            </div>
+                {% endfor %}
+            </table>
         </div>
     </div>
 </div>
+
 {% endblock %}

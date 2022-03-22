@@ -149,6 +149,7 @@ def registrar():
             flash('Registrado correctamente', category='success')
             return redirect(url_for('login'))
     else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
     if form.errors != {}:
@@ -169,7 +170,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user)
             flash(
-                f'Acceso exitoso, logueado como {user.email}', category='success')
+                f'Acceso exitoso, logueado como {user.email} ({user.nombre} {user.apellido})', category='success')
             return redirect(url_for('asset_page'))
         else:
             flash(f'Usuario o contraseña incorrecto. Intente nuevamente.',
@@ -279,38 +280,24 @@ def delete_user(id):
 @app.route('/asset')
 @login_required  # Requiere estar logueado para visualizar
 def asset_page():
-    return render_template('asset.html', asset = [asset.to_dict() for asset in Asset.query])
-
-@app.route('/test_asset')
-@login_required  # Requiere estar logueado para visualizar
-def asset_test():
-    return render_template('includes/asset_tabla.html')
+    return render_template('asset_tabla.html')
 
 
 @app.route('/api/asset')
 @login_required
 def asset():
-    if current_user.admin:   
+    if current_user.is_authenticated:
         return {'data': [asset.to_dict() for asset in Asset.query]}
     else:
         flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
+
 
 @app.route('/list_asset_delete')
 @login_required
 def list_asset_delete():
     query = Asset.query.all()
     return render_template('asset_delete.html', asset=query)
-
-
-@app.route('/restore_asset/<id>/')
-@login_required
-def restore_asset(id):
-    data = Asset.query.get(id)
-    data.eliminar = 0
-    db.session.commit()
-    flash("Restaurado correctamente", category='success')
-    return redirect(url_for('asset_page'))
 
 
 @app.route('/insert_asset', methods=['POST'])
@@ -376,6 +363,30 @@ def delete_asset(id):
     return redirect(url_for('asset_page'))
 
 
+@app.route('/restore_asset/<id>/', methods=['GET', 'POST'])
+@login_required
+def restore_asset(id):
+    data = Asset.query.get(id)
+    data.eliminar = 0
+    db.session.commit()
+    flash("Restaurado correctamente", category='success')
+    return redirect(url_for('asset_page'))
+
+
+@app.route('/asset/view/<id>/', methods=['GET', 'POST'])
+@login_required
+def asset_view(id):
+    asset = Asset.query.filter_by(id=id).first()
+    return render_template('asset_view.html', data=asset)
+
+
+@app.route('/asset/edit/<id>/', methods=['GET', 'POST'])
+@login_required
+def asset_edit(id):
+    asset = Asset.query.filter_by(id=id).first()
+    return render_template('asset_edit.html', data=asset)
+
+
 @app.route('/credentials')
 @login_required
 def credentials():
@@ -390,7 +401,8 @@ def clientes():
 
 @app.errorhandler(404)
 def page_not_found(error):
- return render_template("error.html"), 404
+    return render_template("error.html"), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
