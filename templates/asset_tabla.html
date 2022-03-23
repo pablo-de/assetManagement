@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
-
+{% block title %} Assets {% endblock %}
 {% block content %}
-<div class="container">
-  <div class="jumbotron p-3">
+<div class="jumbotron">
+  <div class="container-fluid">
     <h2><b>Assets</b>
     </h2>
-    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#mymodal"
+    <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#mymodal"
       title="Agregar">Agregar nuevo</button>
-    <a href="{{url_for('list_asset_delete')}}" class="btn btn-outline-danger" title="Eliminados">Eliminados</a>
+    <a href="{{url_for('list_asset_delete')}}" class="btn btn-outline-danger btn-sm" title="Eliminados">Eliminados</a>
     <br>
     <br>
-    <div class="table-responsive-sm">
-      <table id="tablaAssets" class="display" cellspacing="0" width="100%">
+    <div class="table-responsive-xl">
+      <table id="tablaAssets" class="display responsive nowrap" width="100%">
         <thead>
           <tr>
             <th>ID</th>
@@ -149,8 +149,10 @@
       ajax: '/api/asset',
       fixedHeader: true,
       orderCellsTop: true,
+      responsive: true,
+      info: false,
       language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
-      "pageLength": 50,
+      pageLength: 50,
       columns: [
         { data: 'id' },
         { data: 'cliente' },
@@ -231,7 +233,7 @@
         url: "/asset/edit/" + id + "/",
         type: "POST",
         success: function () {
-          table.ajax.reload();
+          window.location.href = "/asset/edit/" + id + "/";
         }
       });
 
@@ -259,4 +261,3 @@
 </script>
 
 {% endblock %}
-

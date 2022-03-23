@@ -19,9 +19,56 @@
     </title>
 </head>
 
-<body>
-    {% include 'includes/navbar.html' %}
-    <br>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                {% if current_user.is_authenticated %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('clientes') }}">Clientes</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('credentials') }}">Credentials</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('asset_page') }}">Assets</a>
+                    </li>
+                </ul>
+                {% if current_user.admin %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('usuarios') }}">Usuarios</a>
+                    </li>
+                </ul>
+
+                {% endif %}
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile', id=current_user.id) }}">{{ current_user.nombre
+                            }} {{
+                            current_user.apellido }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{ url_for('logout') }}">Salir</a>
+                    </li>
+
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+<body style="background-color: rgb(232,236,239,255);">
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -39,8 +86,6 @@
     {% block content %}
 
     {% endblock %}
-
-
 
     <br>
     <!-- Footer -->
@@ -68,7 +113,8 @@
         crossorigin="anonymous"></script>
 
     <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
 
     <!-- Mensajes flash temporales -->
     <script>
@@ -78,8 +124,16 @@
             });
         }, 3000);
     </script>
+    <!-- Menu responsive -->
+    <script>
+        $(".navbar-toggler").click(function () {
+            $("#navbarTogglerDemo01").toggle();
+        });
+    </script>
 
+    <!-- Scripts que vienen de templates -->
     {% block scripts %}{% endblock %}
+    {% block style %}{% endblock %}
 
 </body>
 

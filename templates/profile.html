@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %} Editar perfil {% endblock %}
 {% block content %}
 
 <div class="modal-dialog">
@@ -38,19 +39,38 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="submit">Actualizar</button>
+                    <a href="{{url_for('asset_page')}}" class="btn btn-danger float-right">
+                        Volver</a>
                 </div>
 
             </form>
 
         </div>
         {% elif user != current_user %}
-        <div class="container">
-            <h1>Page Not Found</h1>
-            <p><a href="{{url_for('index')}}" class="btn btn-outline-info">Regresar</a>
+        <div id="content">
+            <h1>404 Page Not Found</h1>
+            <p>The page you requested was not found.</p>
         </div>
         {% endif %}
     </div>
 
 </div>
 
+{% endblock %}
+
+
+{% block style %}
+<style type="text/css">
+    #content {
+        border: #999 1px solid;
+        padding: 20px 20px 12px 20px;
+    }
+
+    h1 {
+        font-weight: normal;
+        font-size: 14px;
+        color: #990000;
+        margin: 0 0 4px 0;
+    }
+</style>
 {% endblock %}

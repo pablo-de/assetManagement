@@ -6,7 +6,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
-import json
 
 app = Flask(__name__)
 app.secret_key = "Secret Key"
@@ -130,35 +129,7 @@ class Asset(db.Model):
         }
 
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/registrar', methods=['GET', 'POST'])
-# @login_required - Sacar comentario en prod
-def registrar():
-    if current_user.admin:
-        form = RegisterForm()
-        if form.validate_on_submit():
-            hashed_password = bcrypt.generate_password_hash(form.password.data)
-            new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
-                               email=form.email.data, cargo=form.cargo.data, password=hashed_password, admin=form.admin.data)
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Registrado correctamente', category='success')
-            return redirect(url_for('login'))
-    else:
-        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
-        return redirect(url_for('asset_page'))
-
-    if form.errors != {}:
-        for err_msg in form.errors.values():
-            flash(f'Error creando el usuario: {err_msg}', category='danger')
-
-    return render_template('registrar.html', form=form)
-
-
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -205,7 +176,7 @@ def update_profile():
             data.cargo = request.form['cargo']
             db.session.commit()
             flash(f"Datos del usuario editados correctamente", category='success')
-            return redirect(url_for('usuarios'))
+            return redirect(url_for('asset_page'))
     else:
         return redirect(url_for('login'))
 
@@ -239,6 +210,29 @@ def update_user():
         flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
+
+@app.route('/registrar', methods=['GET', 'POST'])
+# @login_required - Sacar comentario en prod
+def registrar():
+    if current_user.admin:
+        form = RegisterForm()
+        if form.validate_on_submit():
+            hashed_password = bcrypt.generate_password_hash(form.password.data)
+            new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
+                               email=form.email.data, cargo=form.cargo.data, password=hashed_password, admin=form.admin.data)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registrado correctamente', category='success')
+            return redirect(url_for('usuarios'))
+    else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
+        return redirect(url_for('asset_page'))
+
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(f'Error creando el usuario: {err_msg}', category='danger')
+
+    return render_template('registrar.html', form=form)
 
 @app.route('/changepwd', methods=['GET', 'POST'])
 @login_required

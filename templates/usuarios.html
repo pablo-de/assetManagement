@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% block title %} Usuarios {% endblock %}
 {% block content %}
-<div class="container">
-    <div class="jumbotron p-3">
+<div class="jumbotron">
+    <div class="container-fluid">
         <h2><b>Usuarios</b></h2>
-        <a href="{{ url_for('registrar') }}" class="btn btn-outline-success" title="Registrar">Registrar
+        <a href="{{ url_for('registrar') }}" class="btn btn-outline-success btn-sm" title="Registrar">Registrar
             nuevo</a>
         <br><br>
-        <div class="table-responsive">
-            <table class="table" id="tablaUsuarios">
+        <div class="table-responsive-xl">
+            <table class="display responsive nowrap" style="width:100%" id="tablaUsuarios">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -32,7 +33,7 @@
                             <a href="/changepwd/{{user.id}}" class="btn btn-warning btn-xs" data-toggle="modal"
                                 data-target="#modaleditpwd{{user.id}}" title="Editar contraseña"><i
                                     class="bi bi-lock"></i></a>
-                            <a href="/delete_user/{{user.id}}" class="btn btn-danger btn-xs"><i
+                            <a href="/delete_user/{{user.id}}" class="btn btn-danger btn-xs" id="btnBorrar" onclick="return confirm('¿Seguro que quieres borrar?')"><i
                                     class="bi bi-x-square-fill" title="Eliminar"></i></a>
                         </td>
                     </tr>
@@ -139,5 +140,38 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script>
+    //Arma la tabla y muestra los datos
+    $(document).ready(function () {
+        var table = $('#tablaUsuarios').DataTable({
+            fixedHeader: true,
+            orderCellsTop: true,
+            paging: false,
+            searching: false,
+            ordering: false,
+            info: false,
+            rowReorder: {
+                selector: 'td:nth-child(2)'
+            },
+            responsive: true,
+            language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
+            "pageLength": 50,
+            columns: [
+                { data: 'Nombre' },
+                { data: 'Apellido' },
+                { data: 'Email' },
+                { data: 'Cargo' },
+                { data: 'Acciones' }
+            ]
+
+        });
+    });
+</script>
 
 {% endblock %}

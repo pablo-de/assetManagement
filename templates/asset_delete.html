@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
+{% block title %} Assets borrados {% endblock %}
 {% block content %}
-<div class="container">
-<div class="jumbotron p-3">
-    <h2><b>Asset Eliminados</b><br>
-        <a href="{{url_for('asset_page')}}" class="btn btn-outline-info"><i class="bi bi-arrow-left-square"></i>
-            Regresar</a>
-    </h2>
-    <br>
-    <div class="table-responsive-sm">
-        <table id="tablaDelAssets" class="display" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Nombre</th>
-                    <th>Descipcion</th>
-                    <th>Tipo</th>
-                    <th>IP</th>
-                    <th></th>
-                    <th></th>
+<div class="jumbotron">
+    <div class="container-fluid">
+        <h4><b>Asset Eliminados</b>
+            <a href="{{url_for('asset_page')}}" class="btn btn-outline-info float-right"><i
+                    class="bi bi-arrow-left-square"></i>
+                Regresar</a><br>
+        </h2>
+        <br>
+        <div class="table-responsive-xl">
+            <table id="tablaDelAssets" class="display responsive nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Nombre</th>
+                        <th>Descipcion</th>
+                        <th>Tipo</th>
+                        <th>IP</th>
+                        <th></th>
+                        <th></th>
 
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
     </div>
-</div>
 </div>
 
 {% endblock %}
@@ -38,8 +41,10 @@
     $(document).ready(function () {
         var table = $('#tablaDelAssets').DataTable({
             ajax: '/api/asset',
+            info: false,
+            responsive: true,
             language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
-            "pageLength": 50,
+            pageLength: 50,
             columns: [
                 { data: 'id' },
                 { data: 'cliente' },
@@ -95,7 +100,6 @@
                     type: "POST",
                     success: function () {
                         table.ajax.reload();
-                        window.location.href = "/asset";
                     }
                 });
 
