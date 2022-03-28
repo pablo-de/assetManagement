@@ -12,7 +12,7 @@ app.secret_key = "Secret Key"
 
 bcrypt = Bcrypt(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/assetManagement'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/assetManagement_test'
 app.config['SQALALCHEMY_TRACK_MODIFICATION'] = False
 
 db = SQLAlchemy(app)
@@ -47,7 +47,7 @@ class LoginForm(FlaskForm):
         min=10, max=50)], render_kw={"placeholder": "Email"})
     password = PasswordField(validators=[InputRequired(), Length(
         min=5, max=16)], render_kw={"placeholder": "Password"})
-    submit = SubmitField('Login')
+    submit = SubmitField('Ingresar')
 
 
 class RegisterForm(FlaskForm):
@@ -71,9 +71,56 @@ class RegisterForm(FlaskForm):
                 "El mail ingresado ya se encuentra registrado.")
 
 
+class Cliente(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    razonSocial = db.Column(db.String(100))
+    direccion = db.Column(db.String(100))
+    localidad = db.Column(db.String(100))
+    codigoPostal = db.Column(db.String(50))
+    documento = db.Column(db.String(50))
+    telefono = db.Column(db.String(50))
+    comentarios = db.Column(db.String(1024))
+    creado = db.Column(db.String(50))
+    modificado = db.Column(db.String(50))
+    creador = db.Column(db.String(50))
+    eliminar = db.Column(db.Integer, default=0)
+    asset = db.relationship('Asset', backref='cliente')
+
+    def __init__(self, nombre, razonSocial, direccion, localidad, codigoPostal, documento, telefono, comentarios, creado, modificado, creador):
+        self.nombre = nombre
+        self.razonSocial = razonSocial
+        self.direccion = direccion
+        self.localidad = localidad
+        self.codigoPostal = codigoPostal
+        self.documento = documento
+        self.telefono = telefono
+        self.comentarios = comentarios
+        self.creado = creado
+        self.modificado = modificado
+        self.creador = creador
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nombre': self.nombre,
+            'razonSocial': self.razonSocial,
+            'direccion': self.direccion,
+            'localidad': self.localidad,
+            'codigoPostal': self.codigoPostal,
+            'documento': self.documento,
+            'telefono': self.telefono,
+            'comentarios': self.comentarios,
+            'creado': self.creado,
+            'modificado': self.modificado,
+            'creador': self.creador,
+            'eliminado': self.eliminar
+        }
+
+
 class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    cliente = db.Column(db.String(100))
+    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'))
     nombre = db.Column(db.String(50))
     os = db.Column(db.String(50))
     ip = db.Column(db.String(50))
@@ -90,8 +137,8 @@ class Asset(db.Model):
     creador = db.Column(db.String(50))
     eliminar = db.Column(db.Integer, default=0)
 
-    def __init__(self, cliente, nombre, os, ip, hostname, ram, cpu, vga, disco, descripcion, tipo, comentarios, creado, modificado, creador):
-        self.cliente = cliente
+    def __init__(self, cliente_id, nombre, os, ip, hostname, ram, cpu, vga, disco, descripcion, tipo, comentarios, creado, modificado, creador):
+        self.cliente_id = cliente_id
         self.nombre = nombre
         self.os = os
         self.ip = ip
@@ -110,7 +157,7 @@ class Asset(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
-            'cliente': self.cliente,
+            'cliente': self.cliente.nombre,
             'nombre': self.nombre,
             'os': self.os,
             'ip': self.ip,
@@ -214,25 +261,26 @@ def update_user():
 @app.route('/registrar', methods=['GET', 'POST'])
 # @login_required - Sacar comentario en prod
 def registrar():
-    if current_user.admin:
-        form = RegisterForm()
-        if form.validate_on_submit():
-            hashed_password = bcrypt.generate_password_hash(form.password.data)
-            new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
-                               email=form.email.data, cargo=form.cargo.data, password=hashed_password, admin=form.admin.data)
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Registrado correctamente', category='success')
-            return redirect(url_for('usuarios'))
-    else:
-        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
-        return redirect(url_for('asset_page'))
+    # if current_user.admin:
+    form = RegisterForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
+                           email=form.email.data, cargo=form.cargo.data, password=hashed_password, admin=form.admin.data)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Registrado correctamente', category='success')
+        return redirect(url_for('usuarios'))
+    # else:
+    #    flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
+ #   return redirect(url_for('asset_page'))
 
-    if form.errors != {}:
-        for err_msg in form.errors.values():
-            flash(f'Error creando el usuario: {err_msg}', category='danger')
+    # if form.errors != {}:
+    #    for err_msg in form.errors.values():
+    #        flash(f'Error creando el usuario: {err_msg}', category='danger')
 
     return render_template('registrar.html', form=form)
+
 
 @app.route('/changepwd', methods=['GET', 'POST'])
 @login_required
@@ -250,14 +298,14 @@ def changepwd():
                 flash(f"Contraseña cambiada correctamente", category='success')
                 return redirect(url_for('usuarios'))
             else:
-                flash(f"La contraseña no puede estar vacia", category='success')
+                flash(f"La contraseña no puede estar vacia", category='danger')
                 return redirect(url_for('usuarios'))
     else:
         flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
 
-@app.route('/delete_user/<id>/', methods=['GET', 'POST'])
+@app.route('/delete_user/<id>', methods=['GET', 'POST'])
 @login_required
 def delete_user(id):
     if current_user.admin:
@@ -274,7 +322,8 @@ def delete_user(id):
 @app.route('/asset')
 @login_required  # Requiere estar logueado para visualizar
 def asset_page():
-    return render_template('asset_tabla.html')
+    data = Cliente.query.all()
+    return render_template('asset_tabla.html', clientes=data)
 
 
 @app.route('/api/asset')
@@ -291,7 +340,7 @@ def asset():
 @login_required
 def list_asset_delete():
     query = Asset.query.all()
-    return render_template('asset_delete.html', asset=query)
+    return render_template('asset_delete.html', assets=query)
 
 
 @app.route('/insert_asset', methods=['POST'])
@@ -328,7 +377,7 @@ def insert_asset():
 def update_asset():
     if request.method == 'POST':
         data = Asset.query.get(request.form.get('id'))
-        data.cliente = request.form['cliente']
+        data.cliente_id = request.form['cliente']
         data.nombre = request.form['nombre']
         data.os = request.form['os']
         data.ip = request.form['ip']
@@ -347,7 +396,7 @@ def update_asset():
         return redirect(url_for('asset_page'))
 
 
-@app.route('/delete_asset/<id>/', methods=['GET', 'POST'])
+@app.route('/delete_asset/<id>', methods=['GET', 'POST'])
 @login_required
 def delete_asset(id):
     data = Asset.query.get(id)
@@ -357,7 +406,7 @@ def delete_asset(id):
     return redirect(url_for('asset_page'))
 
 
-@app.route('/restore_asset/<id>/', methods=['GET', 'POST'])
+@app.route('/restore_asset/<id>', methods=['GET', 'POST'])
 @login_required
 def restore_asset(id):
     data = Asset.query.get(id)
@@ -367,30 +416,127 @@ def restore_asset(id):
     return redirect(url_for('asset_page'))
 
 
-@app.route('/asset/view/<id>/', methods=['GET', 'POST'])
+@app.route('/asset/view/<id>', methods=['GET', 'POST'])
 @login_required
 def asset_view(id):
     asset = Asset.query.filter_by(id=id).first()
     return render_template('asset_view.html', data=asset)
 
 
-@app.route('/asset/edit/<id>/', methods=['GET', 'POST'])
+@app.route('/asset/edit/<id>', methods=['GET', 'POST'])
 @login_required
 def asset_edit(id):
     asset = Asset.query.filter_by(id=id).first()
-    return render_template('asset_edit.html', data=asset)
+    data = Cliente.query.all()
+    return render_template('asset_edit.html', data=asset, clientes=data)
+
+
+@app.route('/clientes')
+@login_required
+def clientes_page():
+    return render_template('clientes_tabla.html')
+
+
+@app.route('/api/clientes')
+@login_required
+def cliente():
+    if current_user.is_authenticated:
+        return {'data': [cliente.to_dict() for cliente in Cliente.query]}
+    else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
+        return redirect(url_for('clientes_page'))
+
+
+@app.route('/list_clientes_delete')
+@login_required
+def list_clientes_delete():
+    query = Cliente.query.all()
+    return render_template('clientes_delete.html', clients=query)
+
+
+@app.route('/insert_cliente', methods=['POST'])
+@login_required
+def insert_cliente():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        razonSocial = request.form['razonSocial']
+        direccion = request.form['direccion']
+        localidad = request.form['localidad']
+        codigoPostal = request.form['codigoPostal']
+        documento = request.form['documento']
+        telefono = request.form['telefono']
+        comentarios = request.form['comentarios']
+        creado = datetime.now().strftime('%d-%m-%Y - %H:%M')
+        modificado = ""
+        creador = current_user.nombre + ' ' + current_user.apellido
+
+        my_data = Cliente(nombre, razonSocial, direccion, localidad, codigoPostal,
+                          documento, telefono, comentarios, creado, modificado, creador)
+        db.session.add(my_data)
+        db.session.commit()
+
+        flash(f"Agregado correctamente", category='success')
+        return redirect(url_for('clientes_page'))
+
+
+@app.route('/update_cliente', methods=['GET', 'POST'])
+@login_required
+def update_cliente():
+    if request.method == 'POST':
+        data = Cliente.query.get(request.form.get('id'))
+        data.nombre = request.form['nombre']
+        data.razonSocial = request.form['razonSocial']
+        data.direccion = request.form['direccion']
+        data.localidad = request.form['localidad']
+        data.codigoPostal = request.form['codigoPostal']
+        data.documento = request.form['documento']
+        data.telefono = request.form['telefono']
+        data.comentarios = request.form['comentarios']
+        data.modificado = datetime.now().strftime('%d-%m-%Y - %H:%M')
+
+        db.session.commit()
+        flash(f"Editado correctamente", category='success')
+        return redirect(url_for('clientes_page'))
+
+
+@app.route('/delete_cliente/<id>', methods=['GET', 'POST'])
+@login_required
+def delete_cliente(id):
+    data = Cliente.query.get(id)
+    data.eliminar = 1
+    db.session.commit()
+    flash("Eliminado correctamente", category='success')
+    return redirect(url_for('clientes_page'))
+
+
+@app.route('/restore_cliente/<id>', methods=['GET', 'POST'])
+@login_required
+def restore_cliente(id):
+    data = Cliente.query.get(id)
+    data.eliminar = 0
+    db.session.commit()
+    flash("Restaurado correctamente", category='success')
+    return redirect(url_for('clientes_page'))
+
+
+@app.route('/cliente/view/<id>', methods=['GET', 'POST'])
+@login_required
+def cliente_view(id):
+    cliente = Cliente.query.filter_by(id=id).first()
+    return render_template('clientes_view.html', data=cliente)
+
+
+@app.route('/cliente/edit/<id>', methods=['GET', 'POST'])
+@login_required
+def cliente_edit(id):
+    cliente = Cliente.query.filter_by(id=id).first()
+    return render_template('clientes_edit.html', data=cliente)
 
 
 @app.route('/credentials')
 @login_required
 def credentials():
     return render_template('credentials.html')
-
-
-@app.route('/clientes')
-@login_required
-def clientes():
-    return render_template('clientes.html')
 
 
 @app.errorhandler(404)

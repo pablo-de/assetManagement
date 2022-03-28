@@ -43,6 +43,7 @@
         </tfoot>
       </table>
 
+
       <!-- Modal agregar -->
       <div id="mymodal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -55,9 +56,16 @@
 
               <form action="{{url_for('insert_asset')}}" method="POST">
 
+
                 <div class="form-group">
-                  <label>Cliente</label>
-                  <input type="text" class="form-control" name="cliente">
+                  <label>Cliente:</label><br>
+
+                  <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="cliente">
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                    {% endfor %}
+                  </select>
+
                 </div>
 
                 <div class="form-group">
@@ -138,6 +146,7 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -217,10 +226,10 @@
       var data = table.row($(this).parents('tr')).data();
       id = data['id'];
       $.ajax({
-        url: "/asset/view/" + id + "/",
+        url: "/asset/view/" + id,
         type: "POST",
         success: function () {
-          window.location.href = "/asset/view/" + id + "/";
+          window.location.href = "/asset/view/" + id;
         }
       });
     });
@@ -230,10 +239,10 @@
       var data = table.row($(this).parents('tr')).data();
       id = data['id'];
       $.ajax({
-        url: "/asset/edit/" + id + "/",
+        url: "/asset/edit/" + id,
         type: "POST",
         success: function () {
-          window.location.href = "/asset/edit/" + id + "/";
+          window.location.href = "/asset/edit/" + id;
         }
       });
 
@@ -246,7 +255,7 @@
       var respuesta = confirm("¿Seguro que desea borrar el asset: " + id + " ?");
       if (respuesta) {
         $.ajax({
-          url: "/delete_asset/" + id + "/",
+          url: "/delete_asset/" + id,
           type: "POST",
           success: function () {
             table.ajax.reload();

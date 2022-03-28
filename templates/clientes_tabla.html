@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block title %} Clientes {% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container-fluid">
+        <h2><b>Clientes</b>
+        </h2>
+        <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#mymodal"
+            title="Agregar">Agregar nuevo</button>
+        <a href="{{url_for('list_clientes_delete')}}" class="btn btn-outline-danger btn-sm"
+            title="Eliminados">Eliminados</a>
+        <br>
+        <br>
+        <div class="table-responsive-xl">
+            <table id="tablaClientes" class="display responsive nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Creado</th>
+                        <th>Modificado</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+
+            <!-- Modal agregar -->
+            <div id="mymodal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Agregar Cliente</h4>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <form action="{{url_for('insert_cliente')}}" method="POST">
+
+
+                                <div class="form-group">
+                                    <label>Nombre:</label><br>
+                                    <input type="text" class="form-control" name="nombre">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Razon Social:</label>
+                                    <input type="text" class="form-control" name="razonSocial">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Direccion: </label>
+                                    <input type="text" class="form-control" name="direccion">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Localidad:</label>
+                                    <input type="text" class="form-control" name="localidad">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Codigo Postal: </label>
+                                    <input type="text" class="form-control" name="codigoPostal">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Documento / CUIL / CUIT: </label>
+                                    <input type="text" class="form-control" name="documento">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Teléfono: </label>
+                                    <input type="text" class="form-control" name="telefono">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Comentarios:</label>
+                                    <input type="text" class="form-control" name="comentarios">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" type="submit">Agregar</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    //Arma la tabla y muestra los datos
+    $(document).ready(function () {
+        var table = $('#tablaClientes').DataTable({
+            ajax: '/api/clientes',
+            fixedHeader: true,
+            orderCellsTop: true,
+            responsive: true,
+            info: false,
+            language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
+            pageLength: 50,
+            columns: [
+                { data: 'id' },
+                { data: 'nombre' },
+                { data: 'direccion' },
+                { data: 'creado' },
+                { data: 'modificado' },
+                {
+                    data: null,
+                    className: "dt-center editor-ver",
+                    defaultContent: '<i class="bi bi-search"/>',
+                    orderable: false
+                },
+                {
+                    data: null,
+                    className: "dt-center editor-edit",
+                    defaultContent: '<i class="bi bi-pencil-square"/>',
+                    orderable: false
+                },
+                {
+                    data: null,
+                    className: "dt-center editor-delete",
+                    defaultContent: '<i class="bi bi-x-square-fill"/>',
+                    orderable: false
+                }
+            ],
+
+            //Muestra solo los que no estan eliminados
+            rowCallback: function (row, data, index) {
+                if (data['eliminado'] == 1) {
+                    $(row).hide();
+                }
+            }
+
+        });
+
+        //Ver
+        $('#tablaClientes tbody').on('click', 'td.editor-ver', function () {
+            var data = table.row($(this).parents('tr')).data();
+            id = data['id'];
+            $.ajax({
+                url: "/cliente/view/" + id,
+                type: "POST",
+                success: function () {
+                    window.location.href = "/cliente/view/" + id;
+                }
+            });
+        });
+
+        //Editar
+        $('#tablaClientes tbody').on('click', 'td.editor-edit', function () {
+            var data = table.row($(this).parents('tr')).data();
+            id = data['id'];
+            $.ajax({
+                url: "/cliente/edit/" + id,
+                type: "POST",
+                success: function () {
+                    window.location.href = "/cliente/edit/" + id;
+                }
+            });
+
+        });
+
+        //Borrar cliente
+        $('#tablaClientes tbody').on('click', 'td.editor-delete', function () {
+            var data = table.row($(this).parents('tr')).data();
+            id = data['id']
+            var respuesta = confirm("¿Seguro que desea borrar el cliente: " + id + " ?");
+            if (respuesta) {
+                $.ajax({
+                    url: "/delete_cliente/" + id,
+                    type: "POST",
+                    success: function () {
+                        table.ajax.reload();
+                    }
+                });
+
+            };
+        });
+
+
+    });
+</script>
+
+{% endblock %}

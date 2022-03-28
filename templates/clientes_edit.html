@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %} Editar Cliente {% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+
+        <div class="modal-header">
+            <h4 class="modal-title">Editar Cliente</h4>
+            <a href="{{url_for('clientes_page')}}" class="btn btn-outline-info"><i class="bi bi-arrow-left-square"></i>
+                Regresar</a>
+        </div>
+
+        <div class="modal-body">
+            <form action="{{url_for('update_cliente')}}" method="POST">
+
+                <input type="hidden" name="id" value="{{data.id}}">
+
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" class="form-control" name="nombre" value="{{data.nombre}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Razón Social</label>
+                    <input type="text" class="form-control" name="razonSocial" value="{{data.razonSocial}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" class="form-control" name="direccion" value="{{data.direccion}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Localidad</label>
+                    <input type="text" class="form-control" name="localidad" value="{{data.localidad}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Código Postal</label>
+                    <input type="text" class="form-control" name="codigoPostal" value="{{data.codigoPostal}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Documento / CUIL / CUIT</label>
+                    <input type="text" class="form-control" name="documento" value="{{data.documento}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="text" class="form-control" name="telefono" value="{{data.telefono}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Comentarios</label>
+                    <input type="text" class="form-control" name="comentarios" value="{{data.comentarios}}">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Actualizar</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -7,18 +7,15 @@
             <h4 class="modal-title">Asset: {{data.nombre}}</h4>
             <a href="{{url_for('asset_page')}}" class="btn btn-outline-info"><i class="bi bi-arrow-left-square"></i>
                 Regresar</a>
-
         </div>
 
         <div class="modal-body">
-            <form action="" method="POST">
-
                 <input type="hidden" name="id" value="{{data.id}}">
 
                 <div class="form-group">
                     <label>Cliente</label>
 
-                    <input type="text" class="form-control" name="cliente" value="{{data.cliente}}" readonly>
+                    <input type="text" class="form-control" name="cliente" value="{{data.cliente.nombre}}" readonly>
                 </div>
 
                 <div class="form-group">
@@ -91,7 +88,6 @@
                     <input type="text" class="form-control" name="modificado" value="{{data.modificado}}" readonly>
                 </div>
 
-            </form>
         </div>
 
     </div>
