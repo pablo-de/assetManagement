@@ -86,6 +86,7 @@ class Cliente(db.Model):
     creador = db.Column(db.String(50))
     eliminar = db.Column(db.Integer, default=0)
     asset = db.relationship('Asset', backref='cliente')
+    credential = db.relationship('Credential', backref='cliente')
 
     def __init__(self, nombre, razonSocial, direccion, localidad, codigoPostal, documento, telefono, comentarios, creado, modificado, creador):
         self.nombre = nombre
@@ -136,6 +137,7 @@ class Asset(db.Model):
     modificado = db.Column(db.String(50))
     creador = db.Column(db.String(50))
     eliminar = db.Column(db.Integer, default=0)
+    credential = db.relationship('Credential', backref='asset')
 
     def __init__(self, cliente_id, nombre, os, ip, hostname, ram, cpu, vga, disco, descripcion, tipo, comentarios, creado, modificado, creador):
         self.cliente_id = cliente_id
@@ -168,6 +170,48 @@ class Asset(db.Model):
             'disco': self.disco,
             'descripcion': self.descripcion,
             'tipo': self.tipo,
+            'comentarios': self.comentarios,
+            'creado': self.creado,
+            'modificado': self.modificado,
+            'creador': self.creador,
+            'eliminado': self.eliminar
+        }
+        
+class Credential(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'))
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    tipo = db.Column(db.String(50))
+    nombre = db.Column(db.String(50))
+    user = db.Column(db.String(50))
+    password = db.Column(db.String(50))
+    comentarios = db.Column(db.String(1024))
+    creado = db.Column(db.String(50))
+    modificado = db.Column(db.String(50))
+    creador = db.Column(db.String(50))
+    eliminar = db.Column(db.Integer, default=0)
+
+    def __init__(self, cliente_id, asset_id, tipo, nombre, user, password, comentarios, creado, modificado, creador):
+        self.cliente_id = cliente_id
+        self.asset_id = asset_id
+        self.tipo = tipo
+        self.nombre = nombre
+        self.user = user
+        self.password = password
+        self.comentarios = comentarios
+        self.creado = creado
+        self.modificado = modificado
+        self.creador = creador
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'cliente': self.cliente.nombre,
+            'asset': self.asset.nombre,
+            'tipo': self.tipo,
+            'nombre': self.nombre,
+            'user': self.user,
+            'password': self.password,
             'comentarios': self.comentarios,
             'creado': self.creado,
             'modificado': self.modificado,
@@ -535,8 +579,105 @@ def cliente_edit(id):
 
 @app.route('/credentials')
 @login_required
+def credentials_page():
+    cliente = Cliente.query.all()
+    asset = Asset.query.all()
+    return render_template('credentials_tabla.html', clientes=cliente, assets=asset)
+
+
+@app.route('/api/credentials')
+@login_required
 def credentials():
-    return render_template('credentials.html')
+    if current_user.is_authenticated:
+        return {'data': [credentials.to_dict() for credentials in Credential.query]}
+    else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
+        return redirect(url_for('credentials_page'))
+
+
+@app.route('/list_credentials_delete')
+@login_required
+def list_credentials_delete():
+    query = Credential.query.all()
+    return render_template('credentials_delete.html', clients=query)
+
+
+@app.route('/insert_credential', methods=['POST'])
+@login_required
+def insert_credential():
+    if request.method == 'POST':
+        cliente = request.form['cliente']
+        asset = request.form['asset']
+        tipo = request.form['tipo']
+        nombre = request.form['nombre']
+        user = request.form['user']
+        password = request.form['password']
+        comentarios = request.form['comentarios']
+        creado = datetime.now().strftime('%d-%m-%Y - %H:%M')
+        modificado = ""
+        creador = current_user.nombre + ' ' + current_user.apellido
+
+        my_data = Credential(cliente, asset, tipo, nombre, user, password, comentarios, creado, modificado, creador)
+        db.session.add(my_data)
+        db.session.commit()
+
+        flash(f"Agregado correctamente", category='success')
+        return redirect(url_for('credentials_page'))
+
+
+@app.route('/update_credential', methods=['GET', 'POST'])
+@login_required
+def update_credential():
+    if request.method == 'POST':
+        data = Credential.query.get(request.form.get('id'))
+        data.cliente_id = request.form['cliente']
+        data.asset_id = request.form['asset']
+        data.tipo = request.form['tipo']
+        data.nombre = request.form['nombre']
+        data.user = request.form['user']
+        data.password = request.form['password']
+        data.comentarios = request.form['comentarios']
+        data.modificado = datetime.now().strftime('%d-%m-%Y - %H:%M')
+
+        db.session.commit()
+        flash(f"Editado correctamente", category='success')
+        return redirect(url_for('credentials_page'))
+
+
+@app.route('/delete_credential/<id>', methods=['GET', 'POST'])
+@login_required
+def delete_credential(id):
+    data = Credential.query.get(id)
+    data.eliminar = 1
+    db.session.commit()
+    flash("Eliminado correctamente", category='success')
+    return redirect(url_for('credentials_page'))
+
+
+@app.route('/restore_credential/<id>', methods=['GET', 'POST'])
+@login_required
+def restore_credential(id):
+    data = Credential.query.get(id)
+    data.eliminar = 0
+    db.session.commit()
+    flash("Restaurado correctamente", category='success')
+    return redirect(url_for('credentials_page'))
+
+
+@app.route('/credential/view/<id>', methods=['GET', 'POST'])
+@login_required
+def credentials_view(id):
+    credential = Credential.query.filter_by(id=id).first()
+    return render_template('credentials_view.html', data=credential)
+
+
+@app.route('/credential/edit/<id>', methods=['GET', 'POST'])
+@login_required
+def credentials_edit(id):
+    credential = Credential.query.filter_by(id=id).first()
+    cliente = Cliente.query.all()
+    asset = Asset.query.all()
+    return render_template('credentials_edit.html', data=credential, clientes=cliente, assets=asset)
 
 
 @app.errorhandler(404)
