@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %} Clientes {% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container-fluid">
+        <h4><b>Clientes Eliminados</b>
+            <a href="{{url_for('clientes_page')}}" class="btn btn-outline-info float-right"><i
+                    class="bi bi-arrow-left-square"></i>
+                Regresar</a><br>
+        </h4>
+        <br>
+        <br>
+        <div class="table-responsive-xl">
+            <table id="tablaDelClientes" class="display responsive nowrap" width="100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Creado</th>
+                        <th>Modificado</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    //Arma la tabla y muestra los datos
+    $(document).ready(function () {
+        var table = $('#tablaDelClientes').DataTable({
+            ajax: '/api/clientes',
+            fixedHeader: true,
+            orderCellsTop: true,
+            responsive: true,
+            info: false,
+            language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
+            pageLength: 50,
+            columns: [
+                { data: 'id' },
+                { data: 'nombre' },
+                { data: 'direccion' },
+                { data: 'creado' },
+                { data: 'modificado' },
+                {
+                    data: null,
+                    className: "dt-center editor-ver",
+                    defaultContent: '<i class="bi bi-search"/>',
+                    orderable: false
+                },
+                {
+                    data: null,
+                    className: "dt-center editor-restore",
+                    defaultContent: '<i class="bi bi-arrow-counterclockwise"/>',
+                    orderable: false
+                }
+            ],
+
+            //Muestra solo los que no estan eliminados
+            rowCallback: function (row, data, index) {
+                if (data['eliminado'] == 0) {
+                    $(row).hide();
+                }
+            }
+
+        });
+
+        //Ver
+        $('#tablaDelClientes tbody').on('click', 'td.editor-ver', function () {
+            var data = table.row($(this).parents('tr')).data();
+            id = data['id'];
+            $.ajax({
+                url: "/cliente/view/" + id,
+                type: "POST",
+                success: function () {
+                    window.location.href = "/cliente/view/" + id;
+                }
+            });
+        });
+
+
+        //Restaurar
+        $('#tablaDelClientes tbody').on('click', 'td.editor-restore', function () {
+            var data = table.row($(this).parents('tr')).data();
+            id = data['id'];
+            var respuesta = confirm("¿Seguro que desea restaurar el asset: " + id + " ?");
+            if (respuesta) {
+                $.ajax({
+                    url: "/restore_cliente/" + id,
+                    type: "POST",
+                    success: function () {
+                        table.ajax.reload();
+                    }
+                });
+
+            };
+        });
+
+
+    });
+</script>
+
+{% endblock %}

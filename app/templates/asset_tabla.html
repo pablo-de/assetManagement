@@ -1,0 +1,272 @@
+{% extends 'base.html' %}
+{% block title %} Assets {% endblock %}
+{% block content %}
+<div class="jumbotron">
+  <div class="container-fluid">
+    <h2><b>Assets</b>
+    </h2>
+    <button type="button" class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#mymodal"
+      title="Agregar">Agregar nuevo</button>
+    <a href="{{url_for('list_asset_delete')}}" class="btn btn-outline-danger btn-sm" title="Eliminados">Eliminados</a>
+    <br>
+    <br>
+    <div class="table-responsive-xl">
+      <table id="tablaAssets" class="display responsive nowrap" width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th class="select-filter">Cliente</th>
+            <th class="select-search">Nombre</th>
+            <th class="select-search">Descipción</th>
+            <th class="select-filter">Tipo</th>
+            <th class="select-search">IP</th>
+            <th></th>
+            <th></th>
+            <th></th>
+
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+
+
+      <!-- Modal agregar -->
+      <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Agregar Asset</h4>
+            </div>
+
+            <div class="modal-body">
+
+              <form action="{{url_for('insert_asset')}}" method="POST">
+
+
+                <div class="form-group">
+                  <label>Cliente:</label><br>
+
+                  <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="cliente">
+                    {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                    {% endfor %}
+                  </select>
+
+                </div>
+
+                <div class="form-group">
+                  <label>Nombre</label>
+                  <input type="text" class="form-control" name="nombre">
+                </div>
+
+                <div class="form-group">
+                  <label>OS</label>
+                  <input type="text" class="form-control" name="os">
+                </div>
+
+                <div class="form-group">
+                  <label>IP</label>
+                  <input type="text" class="form-control" name="ip">
+                </div>
+
+                <div class="form-group">
+                  <label>Hostname</label>
+                  <input type="text" class="form-control" name="hostname">
+                </div>
+
+                <div class="form-group">
+                  <label>RAM</label>
+                  <input type="text" class="form-control" name="ram">
+                </div>
+
+                <div class="form-group">
+                  <label>CPU</label>
+                  <input type="text" class="form-control" name="cpu">
+                </div>
+
+                <div class="form-group">
+                  <label>VGA</label>
+                  <input type="text" class="form-control" name="vga">
+                </div>
+
+                <div class="form-group">
+                  <label>Disco</label>
+                  <input type="text" class="form-control" name="disco">
+                </div>
+
+                <div class="form-group">
+                  <label>Descripción:</label>
+                  <input type="text" class="form-control" name="descripcion">
+                </div>
+
+                <div class="form-group">
+                  <label>Tipo:</label><br>
+                  <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="tipo">
+                    <option value="Otros" selected>Otros</option>
+                    <option value="Notebook">Notebook</option>
+                    <option value="Workstation">Workstation</option>
+                    <option value="Router">Router</option>
+                    <option value="Switch">Switch</option>
+                    <option value="Server">Server</option>
+                    <option value="VM">VM</option>
+                    <option value="Impresora">Impresora</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Comentarios:</label>
+                  <input type="text" class="form-control" name="comentarios">
+                </div>
+
+                <div class="modal-footer">
+                  <button class="btn btn-primary" type="submit">Agregar</button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                </div>
+
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+  //Arma la tabla y muestra los datos
+  $(document).ready(function () {
+    var table = $('#tablaAssets').DataTable({
+      ajax: '/api/asset',
+      fixedHeader: true,
+      orderCellsTop: true,
+      responsive: true,
+      info: false,
+      language: { "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-AR.json" },
+      pageLength: 50,
+      columns: [
+        { data: 'id' },
+        { data: 'cliente' },
+        { data: 'nombre' },
+        { data: 'descripcion' },
+        { data: 'tipo' },
+        { data: 'ip' },
+        {
+          data: null,
+          className: "dt-center editor-ver",
+          defaultContent: '<i class="bi bi-search"/>',
+          orderable: false
+        },
+        {
+          data: null,
+          className: "dt-center editor-edit",
+          defaultContent: '<i class="bi bi-pencil-square"/>',
+          orderable: false
+        },
+        {
+          data: null,
+          className: "dt-center editor-delete",
+          defaultContent: '<i class="bi bi-x-square-fill"/>',
+          orderable: false
+        }
+      ],
+
+      //Filtros de busqueda en Cliente y Tipo
+      initComplete: function () {
+        this.api().columns('.select-filter').every(function () {
+          var column = this;
+          var select = $('<select><option value=""></option></select>')
+            .appendTo($(column.footer()).empty())
+            .on('change', function () {
+              var val = $.fn.dataTable.util.escapeRegex(
+                $(this).val()
+              );
+
+              column
+                .search(val ? '^' + val + '$' : '', true, false)
+                .draw();
+            });
+
+          column.data().unique().sort().each(function (d, j) {
+            select.append('<option value="' + d + '">' + d + '</option>')
+          });
+        });
+
+      },
+
+      //Muestra solo los que no estan eliminados
+      rowCallback: function (row, data, index) {
+        if (data['eliminado'] == 1) {
+          $(row).hide();
+        }
+      }
+
+    });
+
+    //Ver
+    $('#tablaAssets tbody').on('click', 'td.editor-ver', function () {
+      var data = table.row($(this).parents('tr')).data();
+      id = data['id'];
+      $.ajax({
+        url: "/asset/view/" + id,
+        type: "POST",
+        success: function () {
+          window.location.href = "/asset/view/" + id;
+        }
+      });
+    });
+
+    //Editar
+    $('#tablaAssets tbody').on('click', 'td.editor-edit', function () {
+      var data = table.row($(this).parents('tr')).data();
+      id = data['id'];
+      $.ajax({
+        url: "/asset/edit/" + id,
+        type: "POST",
+        success: function () {
+          window.location.href = "/asset/edit/" + id;
+        }
+      });
+
+    });
+
+    //Borrar asset
+    $('#tablaAssets tbody').on('click', 'td.editor-delete', function () {
+      var data = table.row($(this).parents('tr')).data();
+      id = data['id']
+      var respuesta = confirm("¿Seguro que desea borrar el asset: " + id + " ?");
+      if (respuesta) {
+        $.ajax({
+          url: "/delete_asset/" + id,
+          type: "POST",
+          success: function () {
+            table.ajax.reload();
+          }
+        });
+
+      };
+    });
+
+
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %} Editar Asset {% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+
+        <div class="modal-header">
+            <h4 class="modal-title">Editar Asset: {{data.nombre}}</h4>
+            <a href="{{url_for('asset_page')}}" class="btn btn-outline-info"><i class="bi bi-arrow-left-square"></i>
+                Regresar</a>
+        </div>
+
+        <div class="modal-body">
+            <form action="{{url_for('update_asset')}}" method="POST">
+
+                <input type="hidden" name="id" value="{{data.id}}">
+
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="cliente">
+                        <option value="{{ data.cliente.id }}">{{ data.cliente.nombre }}</option>
+                        {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" class="form-control" name="nombre" value="{{data.nombre}}">
+                </div>
+
+                <div class="form-group">
+                    <label>OS</label>
+                    <input type="text" class="form-control" name="os" value="{{data.os}}">
+                </div>
+
+                <div class="form-group">
+                    <label>IP</label>
+                    <input type="text" class="form-control" name="ip" value="{{data.ip}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Hostname</label>
+                    <input type="text" class="form-control" name="hostname" value="{{data.hostname}}">
+                </div>
+
+                <div class="form-group">
+                    <label>RAM</label>
+                    <input type="text" class="form-control" name="ram" value="{{data.ram}}">
+                </div>
+
+                <div class="form-group">
+                    <label>CPU</label>
+                    <input type="text" class="form-control" name="cpu" value="{{data.cpu}}">
+                </div>
+
+                <div class="form-group">
+                    <label>VGA</label>
+                    <input type="text" class="form-control" name="vga" value="{{data.vga}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Disco</label>
+                    <input type="text" class="form-control" name="disco" value="{{data.disco}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción:</label>
+                    <input type="text" class="form-control" name="descripcion" value="{{data.descripcion}}">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo:</label><br>
+                    <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg example" name="tipo">
+                        <option selected>{{data.tipo}}</option>
+                        <option value="Notebook">Notebook</option>
+                        <option value="Workstation">Workstation</option>
+                        <option value="Router">Router</option>
+                        <option value="Switch">Switch</option>
+                        <option value="Server">Server</option>
+                        <option value="VM">VM</option>
+                        <option value="Impresora">Impresora</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Comentarios:</label>
+                    <input type="text" class="form-control" name="comentarios" value="{{data.comentarios}}">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Actualizar</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
