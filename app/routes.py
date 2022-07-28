@@ -6,7 +6,6 @@ from flask import redirect, render_template, request, url_for, flash, session
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
 
-
 bcrypt = Bcrypt(app)
 
 @app.route('/', methods=['GET', 'POST'])
