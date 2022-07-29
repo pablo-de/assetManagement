@@ -1,11 +1,13 @@
 version: "3.5"
 services:
   app:
-    build: ./app
+    build: .
     links:
       - db
     ports:
       - "5000:5000"
+    networks:
+      - asset
 
   db:
     image: mysql:5.7
@@ -17,8 +19,11 @@ services:
       MYSQL_PASSWORD: 123456
     ports:
       - "6033:3306"
+    networks:
+      - asset
     volumes:
       - dbdata:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: pma
@@ -31,5 +36,10 @@ services:
     restart: always
     ports:
       - 8081:80
+    networks:
+      - asset
 volumes:
   dbdata:
+
+networks:
+  asset:

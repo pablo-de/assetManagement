@@ -5,10 +5,11 @@ apt install -y gcc libmariadb-dev-compat libmariadb-dev
 
 WORKDIR /app
 
-COPY . .
+# Copia los archivos de la app.
+COPY . /app
 
-RUN pip3 install -r ./app/requirements.txt
+RUN pip3 install -r /app/requirements.txt
 
 EXPOSE 5000
 
-CMD ["python", "/app/run.py"]
+CMD ["python", "run.py"]
