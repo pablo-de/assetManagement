@@ -8,8 +8,10 @@ WORKDIR /app
 # Copia los archivos de la app.
 COPY . /app
 
-RUN pip3 install -r /app/requirements.txt
+RUN pip3 install -r ./app/requirements.txt
 
 EXPOSE 5000
 
 CMD ["python", "run.py"]
+
+

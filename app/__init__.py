@@ -16,7 +16,4 @@ app.config['SQALALCHEMY_TRACK_MODIFICATION'] = False
 
 db = SQLAlchemy(app)
 
-db.init_app(app)
-db.create_all()
-
 from app import routes

@@ -206,3 +206,5 @@ class Credential(db.Model):
             'creador': self.creador,
             'eliminado': self.eliminar
         }
+
+db.create_all()
