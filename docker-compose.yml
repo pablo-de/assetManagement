@@ -1,43 +1,31 @@
-version: "3.5"
-services:
-  app:
-    build: .
-    links:
-      - db
-    ports:
-      - "5000:5000"
-    networks:
-      - asset
+version: "3.7"
 
-  db:
+services:
+
+  mysql:
     image: mysql:5.7
     container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: assetManagement
-      MYSQL_USER: user1
-      MYSQL_PASSWORD: 123456
     ports:
       - "6033:3306"
     networks:
       - asset
     volumes:
-      - dbdata:/var/lib/mysql
+      - ./dbdata:/var/lib/mysql
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: pma
+  web-app:
+    build: .
     links:
-      - db
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-    restart: always
+      - mysql
     ports:
-      - 8081:80
+      - "5000:5000"
     networks:
       - asset
+    volumes:
+      - ./dbdata:/var/lib/mysql
+
 volumes:
   dbdata:
 
