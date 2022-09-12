@@ -12,22 +12,19 @@ services:
       - "6033:3306"
     networks:
       - asset
-    volumes:
-      - ./dbdata:/var/lib/mysql
 
   web-app:
     build: .
-    links:
-      - mysql
+    restart: always
     ports:
       - "5000:5000"
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASS: root
+      MYSQL_DB: assetManagement
     networks:
       - asset
-    volumes:
-      - ./dbdata:/var/lib/mysql
-
-volumes:
-  dbdata:
 
 networks:
   asset:
+    driver: bridge
