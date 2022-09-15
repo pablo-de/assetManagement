@@ -107,9 +107,9 @@ def registrar():
     #    flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
  #   return redirect(url_for('asset_page'))
 
-    # if form.errors != {}:
-    #    for err_msg in form.errors.values():
-    #        flash(f'Error creando el usuario: {err_msg}', category='danger')
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(f'Error creando el usuario: {err_msg}', category='danger')
 
     return render_template('registrar.html', form=form)
 

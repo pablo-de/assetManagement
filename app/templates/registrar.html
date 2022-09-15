@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block title %} Registrar usuarios {% endblock %}
 {% block content %}
-<div class="container">
-    <div class="jumbotron p-3">
+<div class="jumbotron">
+    <div class="container">
+
         <form method="POST" class="form-signin">
             {{ form.hidden_tag() }}
             <h1 class="h3 mb-3 font-weight-normal">
@@ -42,7 +43,7 @@
             <div class="form-group">
                 {{ form.submit(class="btn btn-primary") }}
                 <a href="{{url_for('usuarios')}}" class="btn btn-danger float-right">
-                Volver</a>
+                    Volver</a>
             </div>
 
         </form>

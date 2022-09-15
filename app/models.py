@@ -55,8 +55,7 @@ class RegisterForm(FlaskForm):
     def validate_email(self, email):
         existing_user_email = Usuario.query.filter_by(email=email.data).first()
         if existing_user_email:
-            raise ValidationError(
-                "El mail ingresado ya se encuentra registrado.")
+            raise ValidationError("El mail ingresado ya se encuentra registrado.")
 
 
 class Cliente(db.Model):
