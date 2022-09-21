@@ -4,9 +4,7 @@ from app.models import *
 from datetime import datetime
 from flask import redirect, render_template, request, url_for, flash, session
 from flask_login import login_user, login_required, logout_user, current_user
-from flask_bcrypt import Bcrypt
 
-bcrypt = Bcrypt(app)
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -91,21 +89,21 @@ def update_user():
 
 
 @app.route('/registrar', methods=['GET', 'POST'])
-# @login_required - Sacar comentario en prod
+@login_required
 def registrar():
-    # if current_user.admin:
-    form = RegisterForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
-                           email=form.email.data, cargo=form.cargo.data, password=hashed_password, admin=form.admin.data)
-        db.session.add(new_user)
-        db.session.commit()
-        flash('Registrado correctamente', category='success')
-        return redirect(url_for('usuarios'))
-    # else:
-    #    flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
- #   return redirect(url_for('asset_page'))
+    if current_user.admin:
+        form = RegisterForm()
+        if form.validate_on_submit():
+            hashed_password = bcrypt.generate_password_hash(form.password.data)
+            new_user = Usuario(nombre=form.nombre.data, apellido=form.apellido.data,
+                            email=form.email.data, cargo=form.cargo.data, password=hashed_password, admin=form.admin.data)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Registrado correctamente', category='success')
+            return redirect(url_for('usuarios'))
+    else:
+        flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
+        return redirect(url_for('asset_page'))
 
     if form.errors != {}:
         for err_msg in form.errors.values():

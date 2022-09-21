@@ -5,7 +5,9 @@ from flask_login import LoginManager, UserMixin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import InputRequired, Length, ValidationError
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -207,3 +209,10 @@ class Credential(db.Model):
         }
 
 db.create_all()
+
+admin_user = Usuario(nombre="administrator", apellido="administrator", email="admin@admin.com", cargo="administrator", password=bcrypt.generate_password_hash("123456"), admin=1)
+
+existing_user_email = Usuario.query.filter_by(email="admin@admin.com").first()
+if not existing_user_email:
+    db.session.add(admin_user)
+    db.session.commit()
