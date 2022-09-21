@@ -25,6 +25,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASS: root
       MYSQL_DB: assetManagement
+      TZ: America/Argentina/Buenos_Aires
     networks:
       - asset
 
