@@ -37,6 +37,7 @@ class LoginForm(FlaskForm):
         min=10, max=50)], render_kw={"placeholder": "Email"})
     password = PasswordField(validators=[InputRequired(), Length(
         min=5, max=16)], render_kw={"placeholder": "Password"})
+    
     submit = SubmitField('Ingresar')
 
 
@@ -51,13 +52,20 @@ class RegisterForm(FlaskForm):
         min=4, max=15)], render_kw={"placeholder": "Cargo"})
     password = PasswordField(validators=[InputRequired(), Length(
         min=5, max=16)], render_kw={"placeholder": "Contraseña"})
+    password2 = PasswordField(validators=[InputRequired(), Length(
+        min=5, max=16)], render_kw={"placeholder": "Repetir contraseña"})
     admin = BooleanField(label=('Usuario admin?'))
+    
     submit = SubmitField('Registrar')
 
     def validate_email(self, email):
         existing_user_email = Usuario.query.filter_by(email=email.data).first()
         if existing_user_email:
             raise ValidationError("El mail ingresado ya se encuentra registrado.")
+
+    def validate_password2(self, password2):
+        if password2.data != self.password.data:
+            raise ValidationError('Las contraseñas no coinciden')
 
 
 class Cliente(db.Model):

@@ -120,16 +120,21 @@ def changepwd():
             data = Usuario.query.get(request.form.get('id'))
 
             if request.form['password'] != '':
-                hashed_password = bcrypt.generate_password_hash(
-                    request.form['password'])
-                data.password = hashed_password
+                if request.form['password'] == request.form['password2']:
+                    hashed_password = bcrypt.generate_password_hash(
+                        request.form['password'])
+                    data.password = hashed_password
 
-                db.session.commit()
-                flash(f"Contraseña cambiada correctamente", category='success')
-                return redirect(url_for('usuarios'))
-            else:
+                    db.session.commit()
+                    flash(f"Contraseña editada correctamente", category='success')
+                    return redirect(url_for('usuarios'))
+                else:
+                    flash(f"Las contraseñas no coinciden", category='danger')
+                    return redirect(url_for('usuarios'))
+            else: 
                 flash(f"La contraseña no puede estar vacia", category='danger')
                 return redirect(url_for('usuarios'))
+
     else:
         flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
@@ -139,18 +144,22 @@ def changepwd():
 @login_required
 def delete_user(id):
     if current_user.admin:
-        user = Usuario.query.get(id)
-        db.session.delete(user)
-        db.session.commit()
-        flash("Usuario eliminado correctamente", category='success')
-        return redirect(url_for('usuarios'))
+        if current_user.id != id:
+            user = Usuario.query.get(id)
+            db.session.delete(user)
+            db.session.commit()
+            flash("Usuario eliminado correctamente", category='success')
+            return redirect(url_for('usuarios'))
+        else:
+            flash(f"No puede eliminar su propio usuario", category='danger')
+            return redirect(url_for('usuarios'))
     else:
         flash(f"No tiene suficientes privilegios para ingresar.", category='danger')
         return redirect(url_for('asset_page'))
 
 
 @app.route('/asset')
-@login_required  # Requiere estar logueado para visualizar
+@login_required  
 def asset_page():
     data = Cliente.query.all()
     return render_template('asset_tabla.html', clientes=data)
