@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: assetmanagement
+  labels:
+    app: assetmanagement
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: assetmanagement
+  template:
+    metadata:
+      labels:
+        app: assetmanagement
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mysql-svc
+            - name: DB_PORT
+              value: "3306"
+            - name: MYSQL_DB
+              value: assetManagement
+            - name: MYSQL_PASS
+              value: root
+            - name: MYSQL_USER
+              value: root
+            - name: TZ
+              value: America/Argentina/Buenos_Aires
+          image: pablode24/assetmanagement_web-app:latest
+          name: assetmanagement
+          ports:
+            - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: assetmanagement
+spec:
+  selector:
+    app: assetmanagement
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+
